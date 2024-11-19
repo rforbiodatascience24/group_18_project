@@ -1,0 +1,60 @@
+library("recount3")
+library("dplyr")
+library("tibble")
+library("readr")
+
+
+# About the data  
+
+For our project, we decided to work with TCGA BRCA data. For accessing to this data, we found recount3 package that helps to access data. Information about the library can be found [here](https://rna.recount.bio/docs/)
+
+# Retrieving Projects
+human_projects <- recount3::available_projects("human", recount3_url = "https://sciserver.org/public-data/recount3/data")
+
+# BRCA project
+proj_name <- "BRCA"
+
+# Filter
+proj_info <- human_projects %>%
+  filter(project == proj_name, project_type == "data_sources")
+
+# Create a RangedSummarizedExperiment (RSE) object at the gene level
+rse_gene_object <- recount3::create_rse(proj_info, recount3_url = "https://sciserver.org/public-data/recount3/data")
+
+
+# Extracting Metadata
+First, we select the metadata entries of interest
+meta_data <- tibble(
+  rail_id = rse_gene_object@colData@listData[["rail_id"]],
+  external_id = rse_gene_object@colData@listData[["external_id"]],
+  sex = rse_gene_object@colData@listData[["tcga.gdc_cases.demographic.gender"]],
+  file_source = rse_gene_object@colData@listData[["recount_project.file_source"]],
+  study_name = rse_gene_object@colData@listData[["study"]],
+  country = rse_gene_object@colData@listData[["tcga.cgc_sample_country_of_sample_procurement"]],
+  gender = rse_gene_object@colData@listData[["tcga.gdc_cases.demographic.gender"]],
+  year = rse_gene_object@colData@listData[["tcga.gdc_cases.demographic.year_of_birth"]],
+  ethnicity = rse_gene_object@colData@listData[["tcga.gdc_cases.demographic.ethnicity"]],
+  race = rse_gene_object@colData@listData[["tcga.gdc_cases.demographic.race"]],
+  vital_status = rse_gene_object@colData@listData[["tcga.gdc_cases.diagnoses.vital_status"]],
+  sample_type = rse_gene_object@colData@listData[["tcga.cgc_sample_sample_type"]],
+  cancer_status = rse_gene_object@colData@listData[["tcga.xml_person_neoplasm_cancer_status"]],
+  histol_type = rse_gene_object@colData@listData[["tcga.xml_histological_type"]],
+  packs_smoke = rse_gene_object@colData@listData[["tcga.xml_number_pack_years_smoked"]],
+  years_smoke = rse_gene_object@colData@listData[["tcga.gdc_cases.exposures.years_smoked"]],
+  age_at_diag = rse_gene_object@colData@listData[["tcga.cgc_case_age_at_diagnosis"]],
+  bmi = rse_gene_object@colData@listData[["tcga.gdc_cases.exposures.bmi"]]
+)
+
+# Counts data
+
+Then, we select the count data and generate a table with gene expression
+
+counts <- recount3::compute_read_counts(rse_gene_object) %>%
+  as_tibble(rownames = "gene_id")
+
+
+# Saving
+Finally, we save the data to our raw folder as csv files
+
+write_csv(meta_data, "_raw/BRCA_metadata.csv")
+write_csv(counts, "_raw/BRCA_counts.csv")
