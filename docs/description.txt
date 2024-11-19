@@ -1,0 +1,5 @@
+This folder contains our documents
+
+
+presentation.qmd: Your final Quarto Presentation of your project
+presentation.html: Self-contained HTML5 presentation (just as the course slides)

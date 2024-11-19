@@ -1,0 +1,4 @@
+This folder contains all results generated
+
+*.html: The output from your *.qmds in your R-directory
+key_plots.png: Whichever of all the nice plots you made, which should end up in your final presentation

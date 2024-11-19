@@ -1,0 +1,9 @@
+This folder contains R code used for the project
+01_load.qmd: Loads your data, e.g. combining multiple sheets from an excel file
+02_clean.qmd: Cleans your data per your specifications and converts to tidy format
+03_augment.qmd: Adds new variables, like e.g. computing a BMI
+04_describe.qmd: Descriptive statistics, how many in each group, etc.
+05_analysis_1.qmd: Here goes your first analysis
+06_analysis_2.qmd: Here goes your second analysis and so on
+99_proj_func.qmd: DRY: Don’t Repeat Yourself, repeated code goes into a function
+00_all.qmd: The master document, capable of running the entire project in one go
