@@ -11,6 +11,11 @@ For our project, we decided to work with TCGA BRCA data. For accessing to this d
 # Retrieving Projects
 human_projects <- recount3::available_projects("human", recount3_url = "https://sciserver.org/public-data/recount3/data")
 
+
+# Conecting to recount3:
+
+human_projects <- available_projects()
+
 # BRCA project
 proj_name <- "BRCA"
 
@@ -19,11 +24,11 @@ proj_info <- human_projects %>%
   filter(project == proj_name, project_type == "data_sources")
 
 # Create a RangedSummarizedExperiment (RSE) object at the gene level
-rse_gene_object <- recount3::create_rse(proj_info, recount3_url = "https://sciserver.org/public-data/recount3/data")
+rse_gene_object <- recount3::create_rse(proj_info)
 
 
 # Extracting Metadata
-First, we select the metadata entries of interest
+#First, we select the metadata entries of interest
 meta_data <- tibble(
   rail_id = rse_gene_object@colData@listData[["rail_id"]],
   external_id = rse_gene_object@colData@listData[["external_id"]],
@@ -47,14 +52,37 @@ meta_data <- tibble(
 
 # Counts data
 
-Then, we select the count data and generate a table with gene expression
+#Then, we select the count data and generate a table with gene expression
 
 counts <- recount3::compute_read_counts(rse_gene_object) %>%
   as_tibble(rownames = "gene_id")
+  
+# Step 2: Rename raw_counts to counts if not already named
+if (!"counts" %in% assayNames(rse_gene_object)) {
+  assays(rse_gene_object)$counts <- assays(rse_gene_object)$raw_counts
+  assays(rse_gene_object)$raw_counts <- NULL
+}
 
+# Step 3: Compute TPM
+tpm_counts <- recount::getTPM(rse_gene_object) %>%
+  as_tibble(rownames = "gene_id")
+
+# Saving
+#Finally, we save the data to our raw folder as csv files
+
+write_csv(tpm_counts,"BRCA_tpm_counts.csv")
 
 # Saving
 Finally, we save the data to our raw folder as csv files
 
-write_csv(meta_data, "_raw/BRCA_metadata.csv")
-write_csv(counts, "_raw/BRCA_counts.csv")
+write_csv(meta_data, "BRCA_metadata.csv")
+write_csv(counts, "BRCA_counts.csv")
+
+
+
+
+
+
+
+
+r
