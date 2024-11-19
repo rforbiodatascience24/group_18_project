@@ -1,6 +1,6 @@
 # group_18_project
 
-#Project Contributors
+# Project Contributors
 
 1. florenciadelillo - Florencia De Lillo - s242869
 2. Mar22mar - Maria Kokali - s232486
