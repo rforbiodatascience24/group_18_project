@@ -1,0 +1,205 @@
+---
+title: "Merging files"
+format: html
+editor: visual
+---
+
+## Merging Files
+
+From recount3, we have downloaded the files and save them to \_raw folder. Now we will merge the metadata with the normalized counts to start working
+
+## Libraries
+
+```{r}
+#| silent: true
+library("tidyverse")
+library("here")
+library("dplyr")
+```
+
+Now that we have already imported the necessary libraries, we proceed to load the files and merge them
+
+```{r}
+#| silent: true
+raw_data_path <- here("_raw")
+processed_data_path <- here("data")
+
+normalized_counts<-read_csv(file = file.path(raw_data_path, "BRCA_tpm_counts.csv"))
+counts <- read_csv(file = file.path(raw_data_path, "BRCA_counts.csv"))
+metadata <- read_csv(file = file.path(raw_data_path, "BRCA_metadata.csv"))
+
+```
+
+```{r}
+print(dim(metadata))
+print(dim(counts))
+
+```
+-   So as we can see from the data loaded, the counts file contains 63856 rows, each representing the normalized counts for each gene and 1257 columns, containing the specific information for each breast cancer patient
+
+-   In the metadata file, we would expect the same number of patients, but in this case as rows. And we can see from importing the file that actually there are 1256 rows and 18 columns
+
+
+
+## Clean metadata columns
+
+```{r}
+cols_all_nan <- colnames(metadata)[colSums(is.na(metadata)) == nrow(metadata)]
+print(cols_all_nan)
+
+```
+For those columns all values are nan. Also there are some columns that are not relevant, so we can remove all of them:
+```{r}
+
+columns_to_remove<-c("rail_id","file_source","study_name","year","vital_status",
+                     "packs_smoke","years_smoke","bmi")
+
+clean_metadata <- metadata |> 
+                  select(-all_of(columns_to_remove))
+```
+
+```{r}
+clean_metadata
+```
+## Checking how many NAs we have
+
+```{r}
+print(dim(clean_metadata))
+
+
+clean_metadata <- clean_metadata |> 
+                  filter(!is.na(cancer_status))
+print(dim(clean_metadata))
+
+
+```
+
+
+## Check gender and sex match
+```{r}
+check_same<-clean_metadata |> 
+                filter(gender == sex)
+print(dim(check_same))
+
+```
+So gender and sex match! So we can remove one of them..
+
+```{r}
+
+clean_metadata <- clean_metadata |> 
+                  select(-all_of("gender"))
+```
+
+```{r}
+clean_metadata
+```
+
+## Exploring data before merging
+
+Lets explore the metadata and genes columns a bit before merging, we might not need everything
+
+```{r}
+ggplot(data = clean_metadata,
+       mapping = aes(x = sex
+                    )) +
+  geom_bar() +
+  labs()
+
+```
+
+.... we are going to separate the data
+
+```{r}
+female_metada<-clean_metadata |>  
+              filter(sex=="female")
+
+male_metadata<-clean_metadata |>
+              filter(sex=="male")
+```
+
+
+
+As we will also use the gene count data, we want to identify the samples of each so we can also filter the gene count data to match the metadata
+
+```{r}
+samples_male<- male_metadata |> pull(external_id)
+samples_females<- female_metada |> pull(external_id)
+
+```
+
+
+# Removing genes with 0 variance
+
+```{r}
+genes_with_zero_variance <- counts |> 
+                            rowwise() |> 
+                            mutate(variance = var(c_across(-gene_id))) |> 
+                            ungroup()  |> 
+                            filter(variance == 0) |> 
+                            pull(gene_id) 
+
+
+```
+
+
+
+
+```{r}
+cleaned_counts <- counts |> 
+                  filter(!gene_id %in% genes_with_zero_variance)
+
+cleaned_tpm_counts <- normalized_counts |> 
+                      filter(!gene_id %in% genes_with_zero_variance)
+
+```
+
+```{r}
+print(dim(cleaned_counts))
+print(dim(cleaned_tpm_counts))
+
+```
+
+
+## Filtering counts by samples
+
+```{r}
+
+
+counts_filtered_male<-cleaned_counts |> 
+                      select(all_of(samples_male))
+
+normlized_counts_filtered_male<-normalized_counts |> 
+                      select(all_of(samples_male))
+
+counts_filtered_female<-cleaned_counts |> 
+                      select(all_of(samples_females))
+
+normlized_counts_filtered_female<-normalized_counts |> 
+                      select(all_of(samples_females))
+
+```
+
+## Writing the cleaned and filtered data
+
+```{r}
+
+processed_data_path <- here("data")
+
+#METADATA
+write_csv(male_metadata, file.path(processed_data_path,"02_male_metadata.csv"))
+write_csv(female_metada, file.path(processed_data_path,"02_female_metadata.csv"))
+
+
+#COUNTS NORMALIZED
+
+
+write_csv(counts_filtered_male, file.path(processed_data_path,"02_counts_filtered_male.csv"))
+write_csv(counts_filtered_female, file.path(processed_data_path,"02_counts_filtered_female.csv"))
+
+#COUNTS
+
+write_csv(normlized_counts_filtered_male, file.path(processed_data_path,"02_norm_counts_filtered_male.csv"))
+write_csv(normlized_counts_filtered_female, file.path(processed_data_path,"02_norm_counts_filtered_female.csv"))
+
+
+```
