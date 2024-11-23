@@ -1,11 +1,4 @@
----
-title: "99_proj_func"
-format: html
-editor: visual
----
-
-```{r}
-box_plot <- function(df, x_col, y_col, x_label, y_label, title) {
+box_plot <- function(df, x_col, y_col, x_label="", y_label="", title="") {
   b_plot <- ggplot(data = df,
                    mapping = aes(x = {{x_col}},
                                  y = {{y_col}})) + 
@@ -16,9 +9,7 @@ box_plot <- function(df, x_col, y_col, x_label, y_label, title) {
   
   return(b_plot)
 }
-```
 
-```{r}
 density_plot <- function(df, x_col, y_col, z_color, x_label, y_label, title) {
   d_plot <- ggplot(data = df,
                    mapping = aes(x = {{x_col}})) + 
@@ -29,9 +20,8 @@ density_plot <- function(df, x_col, y_col, z_color, x_label, y_label, title) {
   
   return(d_plot)
 }
-```
 
-```{r}
+
 heatmap <- function(df, x_col, y_col, z_color, x_label, y_label, title) {
   h_map <- ggplot(data = df,
                    mapping = aes(x = {{x_col}},
@@ -44,24 +34,3 @@ heatmap <- function(df, x_col, y_col, z_color, x_label, y_label, title) {
   
   return(h_map)
 }
-```
-
-```{r}
-#| echo: false
-
-box_plot(mtcars, as.factor(cyl), mpg, "xTest", "yTest", "Test title")
-```
-
-```{r}
-#| echo: false
-
-x <- LETTERS[1:20]
-y <- paste0("var", seq(1,20))
-data <- expand.grid(X=x, Y=y)
-data$Z <- runif(400, 0, 5)
-
-heatmap(data, X, Y, Z, "xTest", "yTest", "Title")
-
-```
-
-
