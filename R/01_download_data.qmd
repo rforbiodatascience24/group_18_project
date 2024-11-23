@@ -73,7 +73,7 @@ If you get an error running the following code block you have to clear your R en
 
 ```{r}
 # Extract the raw gen expression counts from the selected projects
-counts <- recount3::compute_read_counts(rse_gene_object) %>%
+counts <- recount3::compute_read_counts(rse_gene_object) |>
   as_tibble(rownames = "gene_id")
 
 if (!"counts" %in% assayNames(rse_gene_object)) {
@@ -87,7 +87,7 @@ if (!"counts" %in% assayNames(rse_gene_object)) {
 
 ```{r}
 
-tpm_counts <- recount::getTPM(rse_gene_object) %>%
+tpm_counts <- recount::getTPM(rse_gene_object) |>
   as_tibble(rownames = "gene_id")
 ```
 
