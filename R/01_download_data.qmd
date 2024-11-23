@@ -4,23 +4,22 @@ format: html
 editor: visual
 ---
 
-The code in this file is used to download all the data we want to use in our project.
+The code in this file is used to download all the raw data we want to use in our project.
 
 # Load libraries
 
 ```{r}
 #| echo: false
 
+library("tidyverse")
 library("recount3")
-library("dplyr")
-library("tibble")
-library("readr")
 library("recount")
+library("here")
 ```
 
 # About the data
 
-For our project, we decided to work with TCGA BRCA data. For accessing to this data, we found recount3 package that helps to access data. Information about the library can be found [here](https://rna.recount.bio/docs/)
+For our project, we decided to work with TCGA BRCA (breast cancer) data. For accessing this data, we use the recount3 package that helps to access TCGA data. Information about the library can be found [here](#0).
 
 # Retrieving Projects
 
@@ -41,7 +40,7 @@ rse_gene_object <- recount3::create_rse(proj_info)
 
 # Extracting Metadata
 
-First, we select the metadata entries of interest
+First, we select the metadata entries of interest.
 
 ```{r}
 # Create an object containing all metadata columns we want to gather
@@ -68,13 +67,13 @@ meta_data <- tibble(
 
 # Counts data
 
-Then, we select the count data and generate a table with gene expression. We also rename the entry raw_counts to counts in order to be able to normalize data afterwards.
+Then, we select the count data and generate a table containing the gene expression data. We also rename the entry raw_counts to counts in order to be able to normalize the gen expression data afterwards.
 
-If you get an error running the following code block you have to clear your R environment and rerun the previous code. We are not sure about the reason, but recount has sometimes weird behavior :)
+If you get an error running the following code block you have to clear your R environment and rerun all the previous code. We are not sure about the reason, but recount has weird behavior sometimes :)
 
 ```{r}
 # Extract the raw gen expression counts from the selected projects
-counts <- recount3::compute_read_counts(rse_gene_object) %>%
+counts <- recount3::compute_read_counts(rse_gene_object) |>
   as_tibble(rownames = "gene_id")
 
 if (!"counts" %in% assayNames(rse_gene_object)) {
@@ -86,21 +85,21 @@ if (!"counts" %in% assayNames(rse_gene_object)) {
 
 # Compute TPM
 
-```{r}
+Next we collect the gen expression data normalized to transcripts per million (TPM). We will need this data for further analysis.
 
-tpm_counts <- recount::getTPM(rse_gene_object) %>%
+```{r}
+# Collect the normalized gen experssion data
+tpm_counts <- recount::getTPM(rse_gene_object) |>
   as_tibble(rownames = "gene_id")
 ```
 
 # Saving files
 
-Finally, we save the data to our raw folder as csv files
+Finally, we save the collected raw data to our \_raw folder as .csv files.
 
 ```{r}
-raw_data_path <- here("_raw")
-
-write_csv(tpm_counts,file.path(raw_data_path,"01_BRCA_tpm_counts.csv"))
-write_csv(meta_data, file.path(raw_data_path,"01_BRCA_metadata.csv"))
-write_csv(counts, file.path(raw_data_path,"01_BRCA_counts.csv"))
-
+# Save raw files to _raw directory
+write_csv(tpm_counts, here("_raw", "01_BRCA_tpm_counts.csv"))
+write_csv(meta_data, here("_raw", "01_BRCA_metadata.csv"))
+write_csv(counts, here("_raw", "01_BRCA_counts.csv"))
 ```
