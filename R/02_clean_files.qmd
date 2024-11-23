@@ -126,6 +126,11 @@ As we will also use the gene count data, we want to identify the samples of each
 samples_male<- male_metadata |> pull(external_id)
 samples_females<- female_metada |> pull(external_id)
 
+
+
+```
+```{r}
+samples_male
 ```
 
 # Removing genes with 0 variance
@@ -157,9 +162,16 @@ print(dim(cleaned_tpm_counts))
 
 ```
 
+```{r}
+cleaned_counts
+```
+
 ## Filtering counts by samples
 
 ```{r}
+
+samples_male<-c(samples_male, "gene_id")
+samples_females<-c(samples_male, "gene_id")
 
 
 counts_filtered_male<-cleaned_counts |> 
@@ -179,6 +191,8 @@ normlized_counts_filtered_female<-normalized_counts |>
 ## Writing the cleaned and filtered data
 
 ```{r}
+
+
 
 processed_data_path <- here("data")
 
