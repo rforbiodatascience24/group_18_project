@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-
+results/
 data/
 _raw/
+R/images/
