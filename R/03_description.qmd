@@ -11,7 +11,6 @@ editor: visual
 library("tidyverse")
 library("here")
 library("dplyr")
-
 source("99_proj_func.R")
 ```
 
@@ -22,8 +21,8 @@ Now that we have already imported the necessary libraries, we proceed to load th
 #| silent: true
 
 processed_data_path <- here("data")
-if (!exists("female_metadata")) {
-  female_metadata<-read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
+if (!exists("female_metada")) {
+  female_metada<-read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
 }
 if (!exists("male_metadata")) {
   male_metadata<-read_csv(file = file.path(processed_data_path, "02_male_metadata.csv"))
@@ -33,6 +32,13 @@ female_norm_counts<-read_csv(file = file.path(processed_data_path,"02_norm_count
 }
 if (!exists("male_norm_counts")) {
 male_norm_counts<-read_csv(file = file.path(processed_data_path, "02_norm_counts_filtered_male.csv"))
+}
+if (!exists("counts_filtered_female")) {
+  counts_filtered_female <- read_csv(file = file.path(processed_data_path,"02_counts_filtered_female.csv"))
+}
+
+if (!exists("counts_filtered_male")) {
+  counts_filtered_male <- read_csv(file = file.path(processed_data_path,"02_counts_filtered_male.csv"))
 }
 
 ```
@@ -75,7 +81,33 @@ ggplot(data = female_metada,
        map = aes(
          x = histol_type,
          fill = sample_type
-       )) + 
-  geom_bar(position="dodge", stat="identity")
+       ))+
+  geom_bar(position = "dodge") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 ```
+
+## RNA Expression Distribution
+```{r}
+rand <- sample(1:nrow(counts_filtered_female), 1000)
+rand_gene_expression <- as.data.frame(t(as.data.frame(counts_filtered_female[rand,])))
+tmp <- as.data.frame(t(as.data.frame(rand_gene_expression)))
+
+
+
+tmp <- tmp |> 
+  pivot_longer(colnames(tmp), values_to = "vals", names_to = "nams")
+
+
+
+ggplot(data = tmp,
+       map = aes(
+         x = vals,
+         col = nams
+       )) +
+  geom_density() + 
+  theme(legend.position = "None") + 
+  xlim(0,1000)
+
+```
+
 
