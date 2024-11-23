@@ -1,0 +1,54 @@
+---
+title: "Merging files"
+format: html
+editor: visual
+---
+
+## Merging Files
+
+From recount3, we have downloaded the files and save them to \_raw folder. Now we will merge the metadata with the normalized counts to start working
+
+## Libraries
+
+```{r}
+#| silent: true
+library("tidyverse")
+library("here")
+```
+
+Now that we have already imported the necessary libraries, we proceed to load the files and merge them
+
+```{r}
+raw_data_path <- here("_raw")
+processed_data_path <- here("data")
+
+
+counts <- read_csv(file = file.path(raw_data_path, "BRCA_counts.csv"))
+metadata <- read_csv(file = file.path(raw_data_path, "BRCA_metadata.csv"))}
+
+```
+
+-   So as we can see from the data loaded, the counts file contains 63856 rows, each representing the normalized counts for each gene and 1257 columns, containing the specific information for each breast cancer patient
+
+-   In the metadata file, we would expect the same number of patients, but in this case as rows. And we can see from importing the file that actually there are 1256 rows and 18 columns
+
+## Exploring data before merging
+
+Lets explore the metadata and genes columns a bit before merging, we might not need everything
+
+```{r}ggplot(data = my_data,}
+       mapping = aes(x = variable_1_name,
+                     y = variable_2_name)) +
+  geom_something() +
+  labs()
+
+```
+
+## Writing the merged file into data
+
+```{r}
+write_csv(x = metadata,
+          file = str_c(processed_data_path, "02_metadata.csv"))
+write_csv(x = counts,
+          file = str_c(processed_data_path, "02_counts.csv"))
+```
