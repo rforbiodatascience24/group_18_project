@@ -11,10 +11,8 @@ The code in this file is used to download all the data we want to use in our pro
 ```{r}
 #| echo: false
 
+library("tidyverse")
 library("recount3")
-library("dplyr")
-library("tibble")
-library("readr")
 library("recount")
 ```
 
