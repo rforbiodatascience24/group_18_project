@@ -1,42 +1,50 @@
+---
+title: "01_download_data"
+format: html
+editor: visual
+---
 
-# Library 
+The code in this file is used to download all the data we want to use in our project.
+
+# Load libraries
+
 ```{r}
+#| echo: false
+
 library("recount3")
 library("dplyr")
 library("tibble")
 library("readr")
 library("recount")
-
 ```
 
-# About the data  
+# About the data
 
 For our project, we decided to work with TCGA BRCA data. For accessing to this data, we found recount3 package that helps to access data. Information about the library can be found [here](https://rna.recount.bio/docs/)
 
 # Retrieving Projects
+
 ```{r}
+# Get all available projects human
 human_projects <- recount3::available_projects("human")
 
-# BRCA project
+# Select the breast cancer project (BRCA)
 proj_name <- "BRCA"
 
-# Filter
-proj_info <- human_projects %>%
+# Select breast cancer projects from all projects
+proj_info <- human_projects |>
   filter(project == proj_name, project_type == "data_sources")
 
 # Create a RangedSummarizedExperiment (RSE) object at the gene level
 rse_gene_object <- recount3::create_rse(proj_info)
-
-
 ```
-
-
-
 
 # Extracting Metadata
 
 First, we select the metadata entries of interest
+
 ```{r}
+# Create an object containing all metadata columns we want to gather
 meta_data <- tibble(
   rail_id = rse_gene_object@colData@listData[["rail_id"]],
   external_id = rse_gene_object@colData@listData[["external_id"]],
@@ -55,15 +63,13 @@ meta_data <- tibble(
   packs_smoke = rse_gene_object@colData@listData[["tcga.xml_number_pack_years_smoked"]],
   years_smoke = rse_gene_object@colData@listData[["tcga.gdc_cases.exposures.years_smoked"]],
   age_at_diag = rse_gene_object@colData@listData[["tcga.cgc_case_age_at_diagnosis"]],
-  bmi = rse_gene_object@colData@listData[["tcga.gdc_cases.exposures.bmi"]]
-)
-
+  bmi = rse_gene_object@colData@listData[["tcga.gdc_cases.exposures.bmi"]])
 ```
-
 
 # Counts data
 
 Then, we select the count data and generate a table with gene expression adn rename raw_counts to counts in order to be able to normalize data afterwards
+
 ```{r}
 
 counts <- recount3::compute_read_counts(rse_gene_object) %>%
@@ -84,9 +90,6 @@ tpm_counts <- recount::getTPM(rse_gene_object) %>%
   as_tibble(rownames = "gene_id")
 
 ```
-
-
-
 
 # Saving files
 
