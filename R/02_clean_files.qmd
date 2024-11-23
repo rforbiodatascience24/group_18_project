@@ -129,6 +129,7 @@ samples_females<- female_metada |> pull(external_id)
 
 
 ```
+
 ```{r}
 samples_male
 ```
@@ -171,7 +172,7 @@ cleaned_counts
 ```{r}
 
 samples_male<-c(samples_male, "gene_id")
-samples_females<-c(samples_male, "gene_id")
+samples_females<-c(samples_females, "gene_id")
 
 
 counts_filtered_male<-cleaned_counts |> 
