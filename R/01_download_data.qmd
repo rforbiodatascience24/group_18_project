@@ -97,8 +97,10 @@ tpm_counts <- recount::getTPM(rse_gene_object) %>%
 Finally, we save the data to our raw folder as csv files
 
 ```{r}
-write_csv(tpm_counts,"BRCA_tpm_counts.csv")
-write_csv(meta_data, "BRCA_metadata.csv")
-write_csv(counts, "BRCA_counts.csv")
+raw_data_path <- here("_raw")
+
+write_csv(tpm_counts,file.path(raw_data_path,"01_BRCA_tpm_counts.csv"))
+write_csv(meta_data, file.path(raw_data_path,"01_BRCA_metadata.csv"))
+write_csv(counts, file.path(raw_data_path,"01_BRCA_counts.csv"))
 
 ```
