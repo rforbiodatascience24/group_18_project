@@ -24,9 +24,9 @@ Now that we have already imported the necessary libraries, we proceed to load th
 raw_data_path <- here("_raw")
 processed_data_path <- here("data")
 
-normalized_counts<-read_csv(file = file.path(raw_data_path, "BRCA_tpm_counts.csv"))
-counts <- read_csv(file = file.path(raw_data_path, "BRCA_counts.csv"))
-metadata <- read_csv(file = file.path(raw_data_path, "BRCA_metadata.csv"))
+normalized_counts<-read_csv(file = file.path(raw_data_path, "01_BRCA_tpm_counts.csv"))
+counts <- read_csv(file = file.path(raw_data_path, "01_BRCA_counts.csv"))
+metadata <- read_csv(file = file.path(raw_data_path, "01_BRCA_metadata.csv"))
 
 ```
 
@@ -35,11 +35,10 @@ print(dim(metadata))
 print(dim(counts))
 
 ```
+
 -   So as we can see from the data loaded, the counts file contains 63856 rows, each representing the normalized counts for each gene and 1257 columns, containing the specific information for each breast cancer patient
 
 -   In the metadata file, we would expect the same number of patients, but in this case as rows. And we can see from importing the file that actually there are 1256 rows and 18 columns
-
-
 
 ## Clean metadata columns
 
@@ -48,7 +47,9 @@ cols_all_nan <- colnames(metadata)[colSums(is.na(metadata)) == nrow(metadata)]
 print(cols_all_nan)
 
 ```
+
 For those columns all values are nan. Also there are some columns that are not relevant, so we can remove all of them:
+
 ```{r}
 
 columns_to_remove<-c("rail_id","file_source","study_name","year","vital_status",
@@ -61,6 +62,7 @@ clean_metadata <- metadata |>
 ```{r}
 clean_metadata
 ```
+
 ## Checking how many NAs we have
 
 ```{r}
@@ -74,14 +76,15 @@ print(dim(clean_metadata))
 
 ```
 
-
 ## Check gender and sex match
+
 ```{r}
 check_same<-clean_metadata |> 
                 filter(gender == sex)
 print(dim(check_same))
 
 ```
+
 So gender and sex match! So we can remove one of them..
 
 ```{r}
@@ -117,8 +120,6 @@ male_metadata<-clean_metadata |>
               filter(sex=="male")
 ```
 
-
-
 As we will also use the gene count data, we want to identify the samples of each so we can also filter the gene count data to match the metadata
 
 ```{r}
@@ -126,7 +127,6 @@ samples_male<- male_metadata |> pull(external_id)
 samples_females<- female_metada |> pull(external_id)
 
 ```
-
 
 # Removing genes with 0 variance
 
@@ -140,9 +140,6 @@ genes_with_zero_variance <- counts |>
 
 
 ```
-
-
-
 
 ```{r}
 cleaned_counts <- counts |> 
@@ -158,7 +155,6 @@ print(dim(cleaned_counts))
 print(dim(cleaned_tpm_counts))
 
 ```
-
 
 ## Filtering counts by samples
 
