@@ -1,0 +1,81 @@
+---
+title: "Description"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r}
+#| silent: true
+library("tidyverse")
+library("here")
+library("dplyr")
+
+source("99_proj_func.R")
+```
+
+
+Now that we have already imported the necessary libraries, we proceed to load the files and merge them
+
+```{r}
+#| silent: true
+
+processed_data_path <- here("data")
+if (!exists("female_metadata")) {
+  female_metadata<-read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
+}
+if (!exists("male_metadata")) {
+  male_metadata<-read_csv(file = file.path(processed_data_path, "02_male_metadata.csv"))
+}
+if (!exists("female_norm_counts")) {
+female_norm_counts<-read_csv(file = file.path(processed_data_path,"02_norm_counts_filtered_female.csv"))
+}
+if (!exists("male_norm_counts")) {
+male_norm_counts<-read_csv(file = file.path(processed_data_path, "02_norm_counts_filtered_male.csv"))
+}
+
+```
+
+
+
+
+
+## Age 
+
+```{r}
+box_plot(female_metada, cancer_status,age_at_diag)
+box_plot(male_metadata, cancer_status,age_at_diag)
+```
+
+## Country
+
+```{r}
+ggplot(data = female_metada,
+       map = aes(
+         x = country
+       )) +
+  geom_bar()
+```
+```{r}
+ggplot(data = male_metadata,
+       map = aes(
+         x = country
+       )) +
+  geom_bar()
+```
+
+
+
+
+## Cancer Types
+
+```{r}
+ggplot(data = female_metada,
+       map = aes(
+         x = histol_type,
+         fill = sample_type
+       )) + 
+  geom_bar(position="dodge", stat="identity")
+```
+
