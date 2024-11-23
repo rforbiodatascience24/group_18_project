@@ -68,10 +68,12 @@ meta_data <- tibble(
 
 # Counts data
 
-Then, we select the count data and generate a table with gene expression adn rename raw_counts to counts in order to be able to normalize data afterwards
+Then, we select the count data and generate a table with gene expression. We also rename the entry raw_counts to counts in order to be able to normalize data afterwards.
+
+If you get an error running the following code block you have to clear your R environment and rerun the previous code. We are not sure about the reason, but recount has sometimes weird behavior :)
 
 ```{r}
-
+# Extract the raw gen expression counts from the selected projects
 counts <- recount3::compute_read_counts(rse_gene_object) %>%
   as_tibble(rownames = "gene_id")
 
@@ -82,13 +84,12 @@ if (!"counts" %in% assayNames(rse_gene_object)) {
   
 ```
 
-# Step 3: Compute TPM
+# Compute TPM
 
 ```{r}
 
 tpm_counts <- recount::getTPM(rse_gene_object) %>%
   as_tibble(rownames = "gene_id")
-
 ```
 
 # Saving files
