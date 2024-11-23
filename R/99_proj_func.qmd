@@ -4,10 +4,6 @@ format: html
 editor: visual
 ---
 
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
 box_plot <- function(df, x_col, y_col, x_label, y_label, title) {
   b_plot <- ggplot(data = df,
