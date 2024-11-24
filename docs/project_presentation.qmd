@@ -1,0 +1,44 @@
+---
+title: "Group 18: Differencial expression of genes in cancer"
+author: "Group 18"
+format: 
+  revealjs:
+    theme: moon
+editor: visual
+---
+
+## Introduction 1
+
+According to the instructions of Liam, we need a 10 slide presentations so we could have the following structure:
+
+1. Introduction
+  -   Data and problem to analyze
+  -   visuzalization of data
+2. Materials and Methods
+  - Libraries needed and why we are using them (recount and )
+  - Which analsysis we did to the data
+  
+3. Results
+  - Graphs with most important results
+  
+4. Disucssion 
+  - Biological insights of results 
+  - Conclusion based on insights
+  
+
+## Introduction 2:
+
+## Materials and Methods 1
+
+## Materials and Methods 2:
+
+
+## Results 1
+
+## Results 2
+
+## Discussion 1
+
+## Discussion 2
+
+
