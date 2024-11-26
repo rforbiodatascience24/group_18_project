@@ -1,32 +1,36 @@
 ---
-title: "Merging files"
+title: "Cleaning Dataset"
 format: html
 editor: visual
 ---
 
-## Merging Files
+## Cleaning Data set 
 
-From recount3, we have downloaded the files and save them to \_raw folder. Now we will merge the metadata with the normalized counts to start working
+From recount3, we have downloaded the files and save them to \_raw folder. Now we will clean the data.
 
 ## Libraries
 
 ```{r}
 #| silent: true
+#| message: false
 library("tidyverse")
 library("here")
 library("dplyr")
 ```
 
-Now that we have already imported the necessary libraries, we proceed to load the files and merge them
+Now that we have already imported the necessary libraries, we proceed to load the files and tidy them
 
 ```{r}
 #| silent: true
 raw_data_path <- here("_raw")
 processed_data_path <- here("data")
 
-normalized_counts<-read_csv(file = file.path(raw_data_path, "01_BRCA_tpm_counts.csv"))
-counts <- read_csv(file = file.path(raw_data_path, "01_BRCA_counts.csv"))
-metadata <- read_csv(file = file.path(raw_data_path, "01_BRCA_metadata.csv"))
+normalized_counts<-read_csv(file = file.path(raw_data_path,
+                                             "01_BRCA_tpm_counts.csv"))
+counts <- read_csv(file = file.path(raw_data_path,
+                                    "01_BRCA_counts.csv"))
+metadata <- read_csv(file = file.path(raw_data_path,
+                                      "01_BRCA_metadata.csv"))
 
 ```
 
@@ -52,15 +56,21 @@ For those columns all values are nan. Also there are some columns that are not r
 
 ```{r}
 
-columns_to_remove<-c("rail_id","file_source","study_name","year","vital_status",
-                     "packs_smoke","years_smoke","bmi")
+columns_to_remove<-c("rail_id",
+                     "file_source",
+                     "study_name",
+                     "year",
+                     "vital_status",
+                     "packs_smoke",
+                     "years_smoke",
+                     "bmi")
 
 clean_metadata <- metadata |> 
                   select(-all_of(columns_to_remove))
 ```
 
 ```{r}
-clean_metadata
+head(clean_metadata)
 ```
 
 ## Checking how many NAs we have
@@ -71,6 +81,7 @@ print(dim(clean_metadata))
 
 clean_metadata <- clean_metadata |> 
                   filter(!is.na(cancer_status))
+
 print(dim(clean_metadata))
 
 
