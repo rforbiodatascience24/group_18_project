@@ -183,7 +183,14 @@ ranked_genes_with_symbols <- merge(ranked_genes, gene_mapping,
                                    by.y = "ensembl_gene_id")
 
 ranked_genes_named <- setNames(ranked_genes_with_symbols$stat, ranked_genes_with_symbols$hgnc_symbol)
+```
+```{r}
+hgnc_symbol = ranked_genes_with_symbols |>
+  pull(hgnc_symbol)
 
+ranked_genes_named_t = ranked_genes_with_symbols |>
+  pull(stat) |>
+  set_names(hgnc_symbol)
 ```
 
 ```{r}
