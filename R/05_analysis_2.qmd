@@ -19,7 +19,7 @@ library("cowplot")
 # Load Data
 
 ```{r}
-#| echo: false
+#| silent: true
 #| message: false
 processed_data_path <- here("data")
 
@@ -57,7 +57,7 @@ data_females <- t(data_females) |>
 
 ```{r}
 filtered_data_females <- data_females |>
-  select(any_of(significant_genes$gene))
+  dplyr::select(any_of(significant_genes$gene))
 ```
 
 #### Check all variables are numerical for PCA
@@ -122,13 +122,16 @@ pca_variance <- tibble(
   Cumulative = cumsum(Percent)
 )
 
+# Convert Rle columns to numeric
+pca_variance <- pca_variance |>
+  mutate(across(everything(), ~ if (inherits(., "Rle")) as.numeric(.) else .))
 
-num_components <- pca_variance |> 
-  filter(Cumulative >= 0.85) |> 
-  slice(1) |> 
-  pull(PC)
+#num_components <- pca_variance |> 
+  #filter(Cumulative >= 0.85) |> 
+  #slice(1) |> 
+  #pull(PC)
 
-num_components
+#num_components
 
 ```
 
