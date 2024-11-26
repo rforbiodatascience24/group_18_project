@@ -1,0 +1,295 @@
+---
+title: "05_analysis_2"
+format: html
+editor: visual
+---
+
+# Load Libraries
+
+```{r}
+#| silent: true
+library("tidyverse")
+library("here")
+library("readr")
+library("stringr")
+library("tidyverse")
+library("patchwork")
+library("ggridges")
+library("dplyr")
+library("broom")
+library("cowplot")
+library("purrr")
+```
+
+# Load Data
+
+```{r}
+#| echo: false
+#| message: false
+#processed_data_path <- here("data")
+
+#data_females <- read_csv(file = file.path(processed_data_path, "02_norm_counts_filtered_female.csv"))
+
+#metadata_females <- read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
+
+#deseq <- read_csv(file = file.path(processed_data_path, "deseq_results.csv"))
+```
+
+```{r}
+#| echo: false
+#| message: false
+data_females <- read_csv(file = "02_norm_counts_filtered_female.csv")
+
+metadata_females <- read_csv(file = "02_female_metadata.csv")
+
+deseq <- read_csv(file ="deseq_results.csv")
+```
+
+# Preprocess data
+
+#### Keep only rows where pvalue \< 0.05 in deseq
+
+```{r}
+significant_genes <- deseq |>
+  filter(pvalue < 0.05) 
+```
+
+```{r}
+"gene_id" %in% colnames(data_females)
+which(colnames(data_females) == "gene_id")
+```
+
+#### Convert the last column of data_females to row names
+
+```{r}
+data_females <- data_females |> 
+  column_to_rownames(var = colnames(data_females)[ncol(data_females)])
+```
+
+#### Transpose data_females
+
+```{r}
+data_females <- t(data_females) |> 
+  as.data.frame()
+```
+
+#### Keep in data_females only the significant genes
+
+```{r}
+filtered_data_females <- data_females |>
+  select(any_of(significant_genes$gene))
+```
+
+#### Check all variables are numerical for PCA
+
+```{r}
+all(sapply(filtered_data_females, is.numeric))
+```
+
+#### Checking the variance of the variables
+
+```{r}
+filtered_data_females %>%
+  summarize(across(everything(), var, na.rm = TRUE)) |>
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Variance") |>
+  arrange(desc(Variance))
+```
+
+There is a high range in variance in the filtered_data_females. We will standardize for the PCA.
+
+# PCA for Females
+
+```{r}
+pca_females <- filtered_data_females |>
+  prcomp(center = TRUE, scale. = TRUE)
+```
+
+```{r}
+pca_females|>
+  str()
+```
+
+The PCA results indicate that the first few components explain most of the variance, suggesting dimensionality reduction is effective. The loadings highlight key genes driving variance, and the scores reveal sample patterns, useful for clustering or visualization in reduced-dimensional space.
+
+# Visualizations/Insights
+
+#### Scree plot using broom to tidy
+
+```{r}
+pca_females|>
+  tidy("pcs")
+```
+
+```{r}
+pca_females |>
+  tidy("pcs") |> 
+  mutate(percent = percent * 100) |> 
+  filter(percent > 0.8) |>  # Focus on components explaining >0.8% variance
+  ggplot(aes(x = PC, y = percent)) +
+  geom_hline(yintercept = 0) +
+  geom_col(colour = "black", fill = "blue", alpha = 0.6) +
+  theme_bw(base_size = 16) +
+  theme(plot.title = element_text(size = 14),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 10),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    title = "Scree Plot of PCA (Explained Variance > 0.8%)",
+    x = "Principal Components",
+    y = "Percentage of Variance Explained"
+  )
+```
+
+Cumulative variance and number of components covering 85% variance
+
+```{r}
+pca_variance <- tibble(
+  PC = seq_along(pca_females$sdev),
+  Variance = pca_females$sdev^2,
+  Percent = Variance / sum(Variance),
+  Cumulative = cumsum(Percent)
+)
+
+
+num_components <- pca_variance_tidy |> 
+  filter(Cumulative >= 0.85) |> 
+  slice(1) |> 
+  pull(PC)
+
+num_components
+
+```
+
+#### Heatmap
+
+```{r}
+#Loadings for the first 4 PCs
+loadings_females <- as.data.frame(pca_females$rotation[, 1:4]) |> 
+  rownames_to_column(var = "Variable") |> 
+  pivot_longer(
+    cols = starts_with("PC"), 
+    names_to = "Principal_Component", 
+    values_to = "Loading"
+  )
+# Select top contributing variables for the first 5 PCs
+top_contributing_variables <- loadings_females |> 
+  group_by(Principal_Component) |> 
+  slice_max(abs(Loading), n = 10) |> # Keep only the top 20 contributing variables
+  ungroup()
+
+# Plot the Heatmap
+ggplot(top_contributing_variables, aes(x = Principal_Component, y = Variable, fill = Loading)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  theme_minimal() +
+  labs(
+    title = "Heatmap of Top Principal Component Loadings - Females",
+    x = "Principal Components",
+    y = "Top Contributing Variables",
+    fill = "Loading"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    axis.text.y = element_text(angle = 0, hjust = 0.5, size = 5),
+    plot.title = element_text(size = 14, hjust = 0.5)
+  )
+```
+
+#### Loading scores for PC1
+
+```{r}
+loading_scores_females <- as.data.frame(pca_females$rotation) |> 
+  rownames_to_column(var = "term") |>  
+  as_tibble()  
+
+gene_scores_females <- loading_scores_females |> 
+  mutate(abs_value = abs(PC1)) |>   
+  arrange(desc(abs_value))          
+
+top_20_genes_females <- gene_scores_females  |> 
+  slice_head(n = 20) |>   
+  pull(term)              
+
+print(top_20_genes_females)
+
+top_genes_loadings_females <- gene_scores_females |> 
+  filter(term %in% top_20_genes_females)
+```
+
+```{r}
+ggplot(top_genes_loadings_females, aes(x = reorder(term, PC1), y = PC1)) +
+  geom_bar(stat = "identity", fill = "red",alpha=0.6) + 
+  coord_flip() + 
+  labs(x = "Terms (Genes)", y = "Loadings (PC1)", title = "Bar Plot of Loadings for PC1") +
+  theme_minimal() +             
+  theme(axis.text.y = element_text(size = 8)) 
+```
+
+#### Loading scores for PC2
+
+```{r}
+gene_scores_females_2 <- loading_scores_females |> 
+  mutate(abs_value = abs(PC2)) |>   
+  arrange(desc(abs_value))          
+
+
+top_20_genes_females_2 <- gene_scores_females_2 |> 
+  slice_head(n = 20) |>   
+  pull(term)              
+
+print(top_20_genes_females_2)
+
+top_genes_loadings_females_2 <- gene_scores_females_2 |> 
+  filter(term %in% top_20_genes_females_2) 
+```
+
+```{r}
+ggplot(top_genes_loadings_females_2, aes(x = reorder(term, PC2), y = PC2)) +
+  geom_bar(stat = "identity", fill = "purple", alpha = 0.6) +
+  coord_flip() + 
+  labs(
+    x = "Terms (Genes)", 
+    y = "Loadings (PC2)", 
+    title = "Bar Plot of Loadings for PC2"
+  ) +
+  theme_minimal() +             
+  theme(axis.text.y = element_text(size = 8))
+```
+
+### Scatterplots
+
+#### Combine filtered_data_females with metadata_females to get further insights
+
+```{r}
+combined_data_females <- filtered_data_females |>
+  rownames_to_column(var = "external_id") |> 
+  left_join(metadata_females, by = "external_id") |>
+  column_to_rownames(var = "external_id")
+```
+
+#### Cancer Status
+
+```{r}
+# Augment PCA results with combined_data_females
+pca_scatter_data <- pca_females |> 
+  augment(combined_data_females)
+
+
+ggplot(pca_scatter_data, aes(.fittedPC1, .fittedPC2, color = cancer_status)) + 
+  geom_point(size = 1.5) +
+  scale_color_manual(
+    values = c("TUMOR FREE" = "#D55E00", "WITH TUMOR" = "blue")
+  ) +
+  labs(
+    title = "PCA Scatterplot with Cancer Status",
+    x = "Principal Component 1",
+    y = "Principal Component 2",
+    color = "Cancer Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+```
