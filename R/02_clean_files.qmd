@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## Cleaning Data set 
+## Cleaning Data set
 
 From recount3, we have downloaded the files and save them to \_raw folder. Now we will clean the data.
 
@@ -105,7 +105,7 @@ clean_metadata <- clean_metadata |>
 ```
 
 ```{r}
-clean_metadata
+head(clean_metadata)
 ```
 
 ## Exploring data before merging
@@ -121,7 +121,7 @@ ggplot(data = clean_metadata,
 
 ```
 
-.... we are going to separate the data
+To minimize the gender effects in the study, we are separating the patients by sex.
 
 ```{r}
 female_metada<-clean_metadata |>  
@@ -134,16 +134,15 @@ male_metadata<-clean_metadata |>
 As we will also use the gene count data, we want to identify the samples of each so we can also filter the gene count data to match the metadata
 
 ```{r}
-samples_male<- male_metadata |> pull(external_id)
-samples_females<- female_metada |> pull(external_id)
+samples_male<- male_metadata |> 
+              pull(external_id)
+samples_females<- female_metada |> 
+              pull(external_id)
 
 
 
 ```
 
-```{r}
-samples_male
-```
 
 # Removing genes with 0 variance
 
@@ -175,15 +174,17 @@ print(dim(cleaned_tpm_counts))
 ```
 
 ```{r}
-cleaned_counts
+head(cleaned_counts)
 ```
 
 ## Filtering counts by samples
 
 ```{r}
 
-samples_male<-c(samples_male, "gene_id")
-samples_females<-c(samples_females, "gene_id")
+samples_male<-c(samples_male, 
+                "gene_id")
+samples_females<-c(samples_females,
+                   "gene_id")
 
 
 counts_filtered_male<-cleaned_counts |> 
@@ -209,20 +210,31 @@ normlized_counts_filtered_female<-normalized_counts |>
 processed_data_path <- here("data")
 
 #METADATA
-write_csv(male_metadata, file.path(processed_data_path,"02_male_metadata.csv"))
-write_csv(female_metada, file.path(processed_data_path,"02_female_metadata.csv"))
-
+write_csv(male_metadata, 
+          file = file.path(processed_data_path,
+                    "02_male_metadata.csv"))
+write_csv(female_metada,
+          file = file.path(processed_data_path,
+                    "02_female_metadata.csv"))
 
 #COUNTS NORMALIZED
 
-
-write_csv(counts_filtered_male, file.path(processed_data_path,"02_counts_filtered_male.csv"))
-write_csv(counts_filtered_female, file.path(processed_data_path,"02_counts_filtered_female.csv"))
+write_csv(counts_filtered_male,
+          file.path(processed_data_path,
+                    "02_counts_filtered_male.csv"))
+write_csv(counts_filtered_female,
+          file.path(processed_data_path,
+                    "02_counts_filtered_female.csv"))
 
 #COUNTS
 
-write_csv(normlized_counts_filtered_male, file.path(processed_data_path,"02_norm_counts_filtered_male.csv"))
-write_csv(normlized_counts_filtered_female, file.path(processed_data_path,"02_norm_counts_filtered_female.csv"))
+write_csv(normlized_counts_filtered_male,
+          file.path(processed_data_path,
+                    "02_norm_counts_filtered_male.csv"))
+
+write_csv(normlized_counts_filtered_female,
+          file.path(processed_data_path,
+          "02_norm_counts_filtered_female.csv"))
 
 
 ```
