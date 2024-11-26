@@ -89,7 +89,7 @@ pca_females <- filtered_data_females |>
 #### Scree plot using broom to tidy
 
 ```{r}
-pca_females |>
+pca_plot <- pca_females |>
   tidy("pcs") |> 
   mutate(percent = percent * 100) |> 
   filter(percent > 0.8) |>  # Focus on components explaining >0.8% variance
@@ -108,6 +108,10 @@ pca_females |>
     x = "Principal Components",
     y = "Percentage of Variance Explained"
   )
+ 
+ggsave("pca_scree_plot.png", plot = pca_plot, width = 10, height = 6, dpi = 300)
+ 
+pca_plot
 ```
 
 The scree plot shows that the first few principal components explain most of the variability in the data. After that, the variance explained by each component decreases significantly.
@@ -115,24 +119,25 @@ The scree plot shows that the first few principal components explain most of the
 Cumulative variance and number of components covering 85% variance
 
 ```{r}
-pca_variance <- tibble(
-  PC = seq_along(pca_females$sdev),
-  Variance = pca_females$sdev^2,
-  Percent = Variance / sum(Variance),
-  Cumulative = cumsum(Percent)
-)
+cummulative <- pca_females |> 
+  tidy("pcs") |> 
+  mutate(percent = percent * 100,  # Convert to percentage
+         cumulative = cumsum(percent)) |> 
+  ggplot(aes(x = PC, y = cumulative)) +
+  geom_line(size = 1, color = "blue") +
+  geom_point(size = 1, color = "red") +
+  geom_hline(yintercept = 85, linetype = "dashed", color = "darkgreen") + 
+  annotate("text", x = 110, y = 87, label = "85% Threshold", color = "darkgreen") +
+  labs(
+    title = "Cumulative Variance Explained by PCA Components",
+    x = "Principal Component",
+    y = "Cumulative Variance Explained (%)"
+  ) +
+  theme_bw(base_size = 14)
 
-# Convert Rle columns to numeric
-pca_variance <- pca_variance |>
-  mutate(across(everything(), ~ if (inherits(., "Rle")) as.numeric(.) else .))
+ggsave("cummulative.png", plot = cummulative, width = 10, height = 6, dpi = 300)
 
-#num_components <- pca_variance |> 
-  #filter(Cumulative >= 0.85) |> 
-  #slice(1) |> 
-  #pull(PC)
-
-#num_components
-
+cummulative
 ```
 
 348 principal components are needed to explain 85% of the variance, highlighting the dataset's high dimensionality.
@@ -148,14 +153,14 @@ loadings_females <- as.data.frame(pca_females$rotation[, 1:4]) |>
     names_to = "Principal_Component", 
     values_to = "Loading"
   )
-# Select top contributing variables for the first 5 PCs
+# Top contributing variables for the first 4 PCs
 top_contributing_variables <- loadings_females |> 
   group_by(Principal_Component) |> 
   slice_max(abs(Loading), n = 10) |> # Keep only the top 10 contributing variables
   ungroup()
 
-# Plot the Heatmap
-ggplot(top_contributing_variables, aes(x = Principal_Component, y = Variable, fill = Loading)) +
+
+heatmap<-ggplot(top_contributing_variables, aes(x = Principal_Component, y = Variable, fill = Loading)) +
   geom_tile() +
   scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
   theme_minimal() +
@@ -170,9 +175,23 @@ ggplot(top_contributing_variables, aes(x = Principal_Component, y = Variable, fi
     axis.text.y = element_text(angle = 0, hjust = 0.5, size = 5),
     plot.title = element_text(size = 14, hjust = 0.5)
   )
+
+ggsave("heatmap.png", plot = heatmap, width = 10, height = 6, dpi = 300)
+
+heatmap
 ```
 
-This heatmap shows the top 10 contributing genes for the first four principal components in the female dataset. Positive loadings (red) and negative loadings (blue) highlight how each gene contributes to each PC.
+This heatmap shows the top 10 contributing genes for the first four principal components in the female dataset.
+
+-   **Red:** Positive loadings, meaning these variables contribute positively to the principal component.
+
+-   **Blue:** Negative loadings, indicating a negative contribution to the principal component.
+
+-   **White:** Near-zero loadings, signifying minimal contribution.
+
+Different PCs are influenced by distinct sets of genes, as seen by the varying distribution of red and blue shades across PCs. For example, PC3 has several genes with strong positive loadings (deep red), while PC4 has strong negative loadings (deep blue).
+
+The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
 
 #### Loading scores for PC1
 
@@ -198,12 +217,16 @@ top_genes_loadings_females <- gene_scores_females |>
 Here, we have the top 20 genes contributing to the PC1 and they are ranked based on the absolute values of their loadings, indicating the strength of their influence on PC1.
 
 ```{r}
-ggplot(top_genes_loadings_females, aes(x = reorder(term, PC1), y = PC1)) +
+pc1 <- ggplot(top_genes_loadings_females, aes(x = reorder(term, PC1), y = PC1)) +
   geom_bar(stat = "identity", fill = "red",alpha=0.6) + 
   coord_flip() + 
   labs(x = "Terms (Genes)", y = "Loadings (PC1)", title = "Bar Plot of Loadings for PC1") +
   theme_minimal() +             
   theme(axis.text.y = element_text(size = 8)) 
+
+ggsave("pc1.png", plot = pc1, width = 10, height = 6, dpi = 300)
+
+pc1
 ```
 
 #### Loading scores for PC2
@@ -227,7 +250,7 @@ top_genes_loadings_females_2 <- gene_scores_females_2 |>
 Similar as PC1, now we have for the PC2.
 
 ```{r}
-ggplot(top_genes_loadings_females_2, aes(x = reorder(term, PC2), y = PC2)) +
+pc2 <- ggplot(top_genes_loadings_females_2, aes(x = reorder(term, PC2), y = PC2)) +
   geom_bar(stat = "identity", fill = "purple", alpha = 0.6) +
   coord_flip() + 
   labs(
@@ -237,6 +260,10 @@ ggplot(top_genes_loadings_females_2, aes(x = reorder(term, PC2), y = PC2)) +
   ) +
   theme_minimal() +             
   theme(axis.text.y = element_text(size = 8))
+
+ggsave("pc2.png", plot = pc2, width = 10, height = 6, dpi = 300)
+
+pc2
 ```
 
 ### Scatterplots
@@ -258,7 +285,7 @@ pca_scatter_data <- pca_females |>
   augment(combined_data_females)
 
 
-ggplot(pca_scatter_data, aes(.fittedPC1, .fittedPC2, color = cancer_status)) + 
+scatter <- ggplot(pca_scatter_data, aes(.fittedPC1, .fittedPC2, color = cancer_status)) + 
   geom_point(size = 1.5) +
   scale_color_manual(
     values = c("TUMOR FREE" = "#D55E00", "WITH TUMOR" = "blue")
@@ -273,6 +300,10 @@ ggplot(pca_scatter_data, aes(.fittedPC1, .fittedPC2, color = cancer_status)) +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
+
+ggsave("scatter.png", plot = scatter, width = 10, height = 6, dpi = 300)
+
+scatter
 ```
 
 There is no distinct grouped clusters for "TUMOR FREE" and "WITH TUMOR". Instead, there is significant overlap between the two groups. The PCA does not fully seperate the cancer statuses.
