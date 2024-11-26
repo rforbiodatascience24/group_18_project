@@ -8,6 +8,7 @@ editor: visual
 
 ```{r}
 #| silent: true
+#| message: false
 library("tidyverse")
 library("here")
 library("readr")
@@ -105,11 +106,9 @@ pca_females <- filtered_data_females |>
 ```
 
 ```{r}
-pca_females|>
-  str()
+#pca_females|>
+ # str()
 ```
-
-The PCA results indicate that the first few components explain most of the variance, suggesting dimensionality reduction is effective. The loadings highlight key genes driving variance, and the scores reveal sample patterns, useful for clustering or visualization in reduced-dimensional space.
 
 # Visualizations/Insights
 
@@ -142,6 +141,8 @@ pca_females |>
   )
 ```
 
+The scree plot shows that the first few principal components explain most of the variability in the data. After that, the variance explained by each component decreases significantly.
+
 Cumulative variance and number of components covering 85% variance
 
 ```{r}
@@ -153,7 +154,7 @@ pca_variance <- tibble(
 )
 
 
-num_components <- pca_variance_tidy |> 
+num_components <- pca_variance |> 
   filter(Cumulative >= 0.85) |> 
   slice(1) |> 
   pull(PC)
@@ -161,6 +162,8 @@ num_components <- pca_variance_tidy |>
 num_components
 
 ```
+
+348 principal components are needed to explain 85% of the variance, highlighting the dataset's high dimensionality.
 
 #### Heatmap
 
@@ -176,7 +179,7 @@ loadings_females <- as.data.frame(pca_females$rotation[, 1:4]) |>
 # Select top contributing variables for the first 5 PCs
 top_contributing_variables <- loadings_females |> 
   group_by(Principal_Component) |> 
-  slice_max(abs(Loading), n = 10) |> # Keep only the top 20 contributing variables
+  slice_max(abs(Loading), n = 10) |> # Keep only the top 10 contributing variables
   ungroup()
 
 # Plot the Heatmap
@@ -196,6 +199,8 @@ ggplot(top_contributing_variables, aes(x = Principal_Component, y = Variable, fi
     plot.title = element_text(size = 14, hjust = 0.5)
   )
 ```
+
+This heatmap shows the top 10 contributing genes for the first four principal components in the female dataset. Positive loadings (red) and negative loadings (blue) highlight how each gene contributes to each PC.
 
 #### Loading scores for PC1
 
@@ -217,6 +222,8 @@ print(top_20_genes_females)
 top_genes_loadings_females <- gene_scores_females |> 
   filter(term %in% top_20_genes_females)
 ```
+
+Here, we have the top 20 genes contributing to the PC1 and they are ranked based on the absolute values of their loadings, indicating the strength of their influence on PC1.
 
 ```{r}
 ggplot(top_genes_loadings_females, aes(x = reorder(term, PC1), y = PC1)) +
@@ -244,6 +251,8 @@ print(top_20_genes_females_2)
 top_genes_loadings_females_2 <- gene_scores_females_2 |> 
   filter(term %in% top_20_genes_females_2) 
 ```
+
+Similar as PC1, now we have for the PC2.
 
 ```{r}
 ggplot(top_genes_loadings_females_2, aes(x = reorder(term, PC2), y = PC2)) +
@@ -293,3 +302,5 @@ ggplot(pca_scatter_data, aes(.fittedPC1, .fittedPC2, color = cancer_status)) +
     plot.title = element_text(hjust = 0.5)
   )
 ```
+
+There is no distinct grouped clusters for "TUMOR FREE" and "WITH TUMOR". Instead, there is significant overlap between the two groups. The PCA does not fully seperate the cancer statuses.
