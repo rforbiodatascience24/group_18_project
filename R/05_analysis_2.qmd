@@ -11,14 +11,9 @@ editor: visual
 #| message: false
 library("tidyverse")
 library("here")
-library("readr")
-library("stringr")
-library("patchwork")
 library("ggridges")
-library("dplyr")
 library("broom")
 library("cowplot")
-library("purrr")
 ```
 
 # Load Data
@@ -26,23 +21,13 @@ library("purrr")
 ```{r}
 #| echo: false
 #| message: false
-#processed_data_path <- here("data")
+processed_data_path <- here("data")
 
-#data_females <- read_csv(file = file.path(processed_data_path, "02_norm_counts_filtered_female.csv"))
+data_females <- read_csv(file = file.path(processed_data_path, "02_norm_counts_filtered_female.csv"))
 
-#metadata_females <- read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
+metadata_females <- read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
 
-#deseq <- read_csv(file = file.path(processed_data_path, "deseq_results.csv"))
-```
-
-```{r}
-#| echo: false
-#| message: false
-data_females <- read_csv(file = "02_norm_counts_filtered_female.csv")
-
-metadata_females <- read_csv(file = "02_female_metadata.csv")
-
-deseq <- read_csv(file ="deseq_results.csv")
+deseq <- read_csv(file = file.path(processed_data_path, "deseq_results.csv"))
 ```
 
 # Preprocess data
@@ -52,11 +37,6 @@ deseq <- read_csv(file ="deseq_results.csv")
 ```{r}
 significant_genes <- deseq |>
   filter(pvalue < 0.05) 
-```
-
-```{r}
-"gene_id" %in% colnames(data_females)
-which(colnames(data_females) == "gene_id")
 ```
 
 #### Convert the last column of data_females to row names
@@ -89,7 +69,7 @@ all(sapply(filtered_data_females, is.numeric))
 #### Checking the variance of the variables
 
 ```{r}
-filtered_data_females %>%
+filtered_data_females |>
   summarize(across(everything(), var, na.rm = TRUE)) |>
   pivot_longer(cols = everything(), names_to = "Variable", values_to = "Variance") |>
   arrange(desc(Variance))
@@ -104,19 +84,9 @@ pca_females <- filtered_data_females |>
   prcomp(center = TRUE, scale. = TRUE)
 ```
 
-```{r}
-#pca_females|>
- # str()
-```
-
 # Visualizations/Insights
 
 #### Scree plot using broom to tidy
-
-```{r}
-pca_females|>
-  tidy("pcs")
-```
 
 ```{r}
 pca_females |>
