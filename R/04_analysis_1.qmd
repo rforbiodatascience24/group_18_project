@@ -15,7 +15,7 @@ library("here")
 ```{r}
 
 female_counts<-read_csv(file = here("data", "02_counts_filtered_female.csv"))
-female_metadata<-read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
+female_metadata<-read_csv(file = here("data", "02_female_metadata.csv"))
 
 ```
 
@@ -28,7 +28,7 @@ meta_samples <- female_metadata |>
 overlapping_samples <- intersect(counts_samples, meta_samples)
 
 counts_checked <- female_counts |> 
-                  select(c("gene_id", all_of(overlapping_samples)))  
+                  dplyr::select(c("gene_id", all_of(overlapping_samples)))  
 
 meta_checked <- female_metadata |>
                 filter(external_id %in% overlapping_samples)
@@ -121,28 +121,47 @@ res_df
 
 ```{r}
 gene_sets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP")
-gene_sets <- split(x = gene_sets$gene_symbol, f = gene_sets$gs_name)
+gene_sets_o <- split(x = gene_sets$gene_symbol, f = gene_sets$gs_name)
 ```
 
 ```{r}
-gene_sets
+gene_sets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP")
+# gene_sets <- split(x = gene_sets$gene_symbol, f = gene_sets$gs_name)
+```
+
+```{r}
+# NEW CODE please check if really equal Im to tired
+name = gene_sets |>
+  pull(gs_name) |>
+  unique()
+
+gene_sets_t <- gene_sets |>
+  group_by(gs_name) |>
+  group_map(~ pull(.x, gene_symbol)) |>
+  set_names(name)
+```
+
+```{r}
+head(gene_sets_o)
+
+head(gene_sets_t)
 ```
 We can see that the gene_sets contain the ensemble gene without the gene version id while our data contains the version. So before proceeding, we should first change the names in our columns:
 
 ```{r}
 
-res_df<-read.csv(file.path(results_data_path,"04_deseq_results.csv"))
+res_df<-read.csv(here("data", "deseq_results.csv"))
 
 cols<-c("gene","stat")
 
 ranked_genes<- res_df |> 
-                  select((cols))
+                  dplyr::select((cols))
 
 
 ranked_genes <- ranked_genes |> 
               separate(gene, into = c("ensembl_gene", "version"), 
                        sep = "\\.", remove = TRUE) |> 
-              select(-version)
+              dplyr::select(-version)
 
 ranked_genes
 
@@ -172,7 +191,7 @@ head(ranked_genes_named)
 ```
 
 ```{r}
-common_genes <- intersect(names(ranked_genes_named), unlist(gene_sets))
+common_genes <- intersect(names(ranked_genes_named), unlist(gene_sets_t))
 
 ```
 
@@ -180,7 +199,7 @@ common_genes <- intersect(names(ranked_genes_named), unlist(gene_sets))
 ## fgsea
 
 ```{r}
-fgsea_res <- fgsea(pathways = gene_sets,
+fgsea_res <- fgsea(pathways = gene_sets_t,
                    stats = ranked_genes_named)
 
 ```
@@ -205,7 +224,7 @@ ggplot(topPathways,
        title = "Top 10 Enriched Pathways") +
   theme_minimal()
 
-ggsave(file.path(results_data_path,"04_top_10_enriched_pathways.png"), 
+ggsave(here("data", "04_top_10_enriched_pathways.png"), 
        plot = last_plot(), 
        width = 10, height = 6, dpi = 300,
        bg = "white")
