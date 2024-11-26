@@ -5,6 +5,7 @@ library(DESeq2)
 library(fgsea)
 library(msigdbr)
 library(dplyr)
+library(biomaRt)
 
 ```
 
@@ -21,37 +22,30 @@ female_metadata<-read_csv(file = file.path(processed_data_path, "02_female_metad
 ```
 
 ```{r}
-# Assuming 'female_counts' and 'female_metadata' are already loaded as data frames
 
-# Extract sample names from the counts and metadata
-counts_samples <- colnames(female_counts)[-1]  # Exclude the 'gene_id' column
-meta_samples <- female_metadata |> pull(external_id)
+counts_samples <- colnames(female_counts)[-1]  
+meta_samples <- female_metadata |> 
+                pull(external_id)
 
-# Find the overlapping samples between counts and metadata
 overlapping_samples <- intersect(counts_samples, meta_samples)
 
-# Filter the counts and metadata for the overlapping samples
 counts_checked <- female_counts |> 
-  select(c("gene_id", all_of(overlapping_samples)))  # Use all_of() to avoid warnings
+                  select(c("gene_id", all_of(overlapping_samples)))  
 
 meta_checked <- female_metadata |>
-  filter(external_id %in% overlapping_samples)
+                filter(external_id %in% overlapping_samples)
 
-# Convert counts to matrix format and set row names to 'gene_id'
 BRCA_counts_matrix <- counts_checked |> 
-  column_to_rownames("gene_id")
+                      column_to_rownames("gene_id")
 
-# Ensure column names in counts match row names in metadata
 if (!all(colnames(BRCA_counts_matrix) %in% meta_checked$external_id)) {
   stop("Mismatch between column names in counts matrix and metadata external IDs.")
 }
 
-# Reorder metadata to match the order of columns in counts matrix
 meta_checked <- meta_checked |>
-  filter(external_id %in% colnames(BRCA_counts_matrix)) |>
-  arrange(match(external_id, colnames(BRCA_counts_matrix)))
+                filter(external_id %in% colnames(BRCA_counts_matrix)) |>
+                arrange(match(external_id, colnames(BRCA_counts_matrix)))
 
-# Ensure order consistency
 if (!all(meta_checked$external_id == colnames(BRCA_counts_matrix))) {
   stop("Column order in counts matrix does not match metadata order.")
 }
@@ -59,30 +53,14 @@ if (!all(meta_checked$external_id == colnames(BRCA_counts_matrix))) {
 
 ```
 
-## Data merging
-
-```{r}
-
-
-
-
-
-
-```
-
 ## Building the deseq object
 
 ```{r}
-
-
 dds <- DESeqDataSetFromMatrix(countData = BRCA_counts_matrix,
                        colData = meta_checked,
                        design = ~ cancer_status)
-
 dds <- DESeq(dds)
 res <- results(dds)
-
-
 
 ```
 
@@ -93,20 +71,19 @@ summary(res)
 
 ```{r}
 res_df <- res |>
-  as_tibble(rownames = "gene") |>  
-   filter(!is.na(stat)) |> 
-
-  mutate(significant = padj < 0.01) 
+          as_tibble(rownames = "gene") |>  
+           filter(!is.na(stat)) |> 
+          mutate(significant = padj < 0.01) 
 ```
 
 ## Volcano plot
 
 ```{r}
-# Updated Volcano Plot
 ggplot(res_df, 
        aes(x = log2FoldChange, 
            y = -log10(padj), 
            color = significant)) +
+  
   geom_point(size = 2, alpha = 0.7) + 
   scale_color_manual(values = c("grey", "red")) +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "blue") +
@@ -122,7 +99,7 @@ ggplot(res_df,
   
   theme_minimal(base_size = 14) 
 
-ggsave(file.path(results_data_path,"05_volcano_plot.png"), 
+ggsave(file.path(results_data_path,"04_volcano_plot.png"), 
        plot = last_plot(), 
        width = 10, height = 6, dpi = 300,
        bg = "white")
@@ -156,7 +133,8 @@ We can see that the gene_sets contain the ensemble gene without the gene version
 
 ```{r}
 
-res_df<-read.csv(file.path(results_data_path,"05_deseq_results.csv"))
+res_df<-read.csv(file.path(results_data_path,"04_deseq_results.csv"))
+
 cols<-c("gene","stat")
 
 ranked_genes<- res_df |> 
@@ -164,37 +142,35 @@ ranked_genes<- res_df |>
 
 
 ranked_genes <- ranked_genes |> 
-  separate(gene, into = c("ensembl_gene", "version"), sep = "\\.", remove = TRUE) |> 
-  select(-version)
+              separate(gene, into = c("ensembl_gene", "version"), 
+                       sep = "\\.", remove = TRUE) |> 
+              select(-version)
 
 ranked_genes
 
 ```
 
 ```{r}
-library(biomaRt)
 
 ensembld_ids<-ranked_genes |> pull(ensembl_gene)
 
-# Set up the Ensembl Mart
 ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 
-# Get the mapping from Ensembl ID to Gene Symbol
 gene_mapping <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"), 
                       filters = "ensembl_gene_id", 
                       values = ensembld_ids, 
                       mart = ensembl)
 
-# Merge the mapping with your ranked list to get Gene Symbols
-ranked_genes_with_symbols <- merge(ranked_genes, gene_mapping, by.x = "ensembl_gene", by.y = "ensembl_gene_id")
+ranked_genes_with_symbols <- merge(ranked_genes, gene_mapping,
+                                   by.x = "ensembl_gene", 
+                                   by.y = "ensembl_gene_id")
 
-# Create a named vector with Gene Symbols as names
 ranked_genes_named <- setNames(ranked_genes_with_symbols$stat, ranked_genes_with_symbols$hgnc_symbol)
 
 ```
 
 ```{r}
-ranked_genes_named
+head(ranked_genes_named)
 ```
 
 ```{r}
@@ -211,13 +187,13 @@ fgsea_res <- fgsea(pathways = gene_sets,
 
 ```
 ```{r}
-fgsea_res
+head(fgsea_res)
 ```
 
 ```{r}
 topPathways <- fgsea_res  |> 
-  dplyr::arrange(padj) |> 
-  dplyr::slice(1:10)  # Adjust to show top 10 pathways
+                dplyr::arrange(padj) |> 
+                dplyr::slice(1:10)  
 
 ggplot(topPathways, 
        mapping = aes(x = reorder(pathway, NES), 
@@ -230,7 +206,8 @@ ggplot(topPathways,
        y = "Normalized Enrichment Score (NES)", 
        title = "Top 10 Enriched Pathways") +
   theme_minimal()
-ggsave(file.path(results_data_path,"05_top_10_enriched_pathways.png"), 
+
+ggsave(file.path(results_data_path,"04_top_10_enriched_pathways.png"), 
        plot = last_plot(), 
        width = 10, height = 6, dpi = 300,
        bg = "white")
