@@ -85,25 +85,21 @@ ggplot(data = female_metada,
 ## RNA Expression Distribution
 
 ```{r}
-rand <- sample(1:nrow(counts_filtered_female),
-               1000)
-rand_gene_expression <- as.data.frame(t(as.data.frame(counts_filtered_female[rand,])))
-tmp <- as.data.frame(t(as.data.frame(rand_gene_expression)))
+
+rand_gene_expression <- counts_filtered_female |> 
+  slice_sample(n = 1000) |> 
+  pivot_longer(cols = -gene_id,
+               names_to = "samples",
+               values_to = "GeneCount")
 
 
 
-tmp <- tmp |> 
-  pivot_longer(colnames(tmp),
-               values_to = "vals",
-               names_to = "nams")
-
-
-
-ggplot(data = tmp,
+ggplot(data = rand_gene_expression,
        map = aes(
-         x = vals,
-         col = nams
+         x = GeneCount,
+         col = gene_id
        )) +
   geom_density() + 
-  theme(legend.position = "None") 
+  theme(legend.position = "None") +
+  xlim(0,1000)
 ```
