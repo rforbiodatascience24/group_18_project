@@ -27,7 +27,7 @@ According to the instructions of Liam, we need a 10 slide presentations so we co
   
 
 ## Problem
-
+Get further understanding of breast cancer by analysing the differential gen expression in patients.
 
 ## Data
 
