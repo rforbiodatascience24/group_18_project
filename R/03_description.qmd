@@ -1,5 +1,5 @@
 ---
-title: "Description"
+title: "Descriptive analysis"
 format: html
 editor: visual
 ---
@@ -8,12 +8,12 @@ editor: visual
 
 ```{r}
 #| silent: true
+#| message: false
 library("tidyverse")
 library("here")
 library("dplyr")
 source("99_proj_func.R")
 ```
-
 
 Now that we have already imported the necessary libraries, we proceed to load the files and merge them
 
@@ -22,36 +22,34 @@ Now that we have already imported the necessary libraries, we proceed to load th
 
 processed_data_path <- here("data")
 if (!exists("female_metada")) {
-  female_metada<-read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
+  female_metada<-read_csv(file = here("data","02_female_metadata.csv"))
 }
 if (!exists("male_metadata")) {
-  male_metadata<-read_csv(file = file.path(processed_data_path, "02_male_metadata.csv"))
+  male_metadata<-read_csv(file = here("data", "02_male_metadata.csv"))
 }
 if (!exists("female_norm_counts")) {
-female_norm_counts<-read_csv(file = file.path(processed_data_path,"02_norm_counts_filtered_female.csv"))
+female_norm_counts<-read_csv(file = here("data","02_norm_counts_filtered_female.csv"))
 }
 if (!exists("male_norm_counts")) {
-male_norm_counts<-read_csv(file = file.path(processed_data_path, "02_norm_counts_filtered_male.csv"))
+male_norm_counts<-read_csv(file = here("data", "02_norm_counts_filtered_male.csv"))
 }
 if (!exists("counts_filtered_female")) {
-  counts_filtered_female <- read_csv(file = file.path(processed_data_path,"02_counts_filtered_female.csv"))
+  counts_filtered_female <- read_csv(file = here("data","02_counts_filtered_female.csv"))
 }
 
 if (!exists("counts_filtered_male")) {
-  counts_filtered_male <- read_csv(file = file.path(processed_data_path,"02_counts_filtered_male.csv"))
+  counts_filtered_male <- read_csv(file = here("data","02_counts_filtered_male.csv"))
 }
 
 ```
 
-
-
-
-
-## Age 
+## Age
 
 ```{r}
-box_plot(female_metada, cancer_status,age_at_diag)
-box_plot(male_metadata, cancer_status,age_at_diag)
+box_plot(female_metada,
+         cancer_status,age_at_diag)
+box_plot(male_metadata,
+         cancer_status,age_at_diag)
 ```
 
 ## Country
@@ -63,6 +61,7 @@ ggplot(data = female_metada,
        )) +
   geom_bar()
 ```
+
 ```{r}
 ggplot(data = male_metadata,
        map = aes(
@@ -70,9 +69,6 @@ ggplot(data = male_metadata,
        )) +
   geom_bar()
 ```
-
-
-
 
 ## Cancer Types
 
@@ -87,15 +83,19 @@ ggplot(data = female_metada,
 ```
 
 ## RNA Expression Distribution
+
 ```{r}
-rand <- sample(1:nrow(counts_filtered_female), 1000)
+rand <- sample(1:nrow(counts_filtered_female),
+               1000)
 rand_gene_expression <- as.data.frame(t(as.data.frame(counts_filtered_female[rand,])))
 tmp <- as.data.frame(t(as.data.frame(rand_gene_expression)))
 
 
 
 tmp <- tmp |> 
-  pivot_longer(colnames(tmp), values_to = "vals", names_to = "nams")
+  pivot_longer(colnames(tmp),
+               values_to = "vals",
+               names_to = "nams")
 
 
 
@@ -105,9 +105,5 @@ ggplot(data = tmp,
          col = nams
        )) +
   geom_density() + 
-  theme(legend.position = "None") + 
-  xlim(0,1000)
-
+  theme(legend.position = "None") 
 ```
-
-
