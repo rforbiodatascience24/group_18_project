@@ -1,11 +1,10 @@
 ```{r}
-library(ggplot2)
-library(tidyverse)
-library(DESeq2)
-library(fgsea)
-library(msigdbr)
-library(dplyr)
-library(biomaRt)
+library("tidyverse")
+library("DESeq2")
+library("fgsea")
+library("msigdbr")
+library("biomaRt")
+library("here")
 
 ```
 
@@ -14,9 +13,8 @@ library(biomaRt)
 ## Data loading
 
 ```{r}
-processed_data_path <- here("data")
 
-female_counts<-read_csv(file = file.path(processed_data_path, "02_counts_filtered_female.csv"))
+female_counts<-read_csv(file = here("data", "02_counts_filtered_female.csv"))
 female_metadata<-read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
 
 ```
