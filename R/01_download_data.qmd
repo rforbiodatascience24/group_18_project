@@ -93,6 +93,18 @@ tpm_counts <- recount::getTPM(rse_gene_object) |>
   as_tibble(rownames = "gene_id")
 ```
 
+# Create project folders
+```{r}
+create_folders <- function(folder_paths) {
+  folder_paths %>%
+    walk(~ if (!dir.exists(.x)) dir.create(.x, recursive = TRUE))
+}
+
+folders <- c("_raw", "data", "results")
+create_folders(folders)
+
+```
+
 # Saving files
 
 Finally, we save the collected raw data to our \_raw folder as .csv files.
