@@ -17,29 +17,17 @@ library("tidyverse")
 Now that we have already imported the necessary libraries, we proceed to load the files and merge them
 
 ```{r}
-#| silent: true
+# load metadata
+female_metadata <- read_csv(here("data","02_female_metadata.csv"))
+male_metadata <- read_csv(here("data", "02_male_metadata.csv"))
 
-processed_data_path <- here("data")
-if (!exists("female_metada")) {
-  female_metada<-read_csv(file = here("data","02_female_metadata.csv"))
-}
-if (!exists("male_metadata")) {
-  male_metadata<-read_csv(file = here("data", "02_male_metadata.csv"))
-}
-if (!exists("female_norm_counts")) {
-female_norm_counts<-read_csv(file = here("data","02_norm_counts_filtered_female.csv"))
-}
-if (!exists("male_norm_counts")) {
-male_norm_counts<-read_csv(file = here("data", "02_norm_counts_filtered_male.csv"))
-}
-if (!exists("counts_filtered_female")) {
-  counts_filtered_female <- read_csv(file = here("data","02_counts_filtered_female.csv"))
-}
+# load normalised data
+female_norm_counts <- read_csv(here("data","02_norm_counts_filtered_female.csv"))
+male_norm_counts <- read_csv(here("data", "02_norm_counts_filtered_male.csv"))
 
-if (!exists("counts_filtered_male")) {
-  counts_filtered_male <- read_csv(file = here("data","02_counts_filtered_male.csv"))
-}
-
+# load raw counts data 
+counts_filtered_female <- read_csv(here("data","02_counts_filtered_female.csv"))
+counts_filtered_male <- read_csv(here("data","02_counts_filtered_male.csv"))
 ```
 
 ## Age
