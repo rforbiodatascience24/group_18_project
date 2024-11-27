@@ -94,6 +94,9 @@ tpm_counts <- recount::getTPM(rse_gene_object) |>
 ```
 
 # Create project folders
+
+Before we can save our downloaded data we need to create our folder structure.
+
 ```{r}
 create_folders <- function(folder_paths) {
   folder_paths %>%
