@@ -7,14 +7,17 @@ editor: visual
 # Analysis 1
 
 ## Libraries
+
 ```{r}
-library("tidyverse")
+#| silent: true
+#| message: false
+
+library("here")
 library("DESeq2")
 library("fgsea")
 library("msigdbr")
 library("biomaRt")
-library("here")
-
+library("tidyverse")
 ```
 
 # DESEQ analysis
