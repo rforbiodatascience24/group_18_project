@@ -25,29 +25,31 @@ library("tidyverse")
 ## Data loading
 
 ```{r}
-
-female_counts<-read_csv(file = here("data", "02_counts_filtered_female.csv"))
-female_metadata<-read_csv(file = here("data", "02_female_metadata.csv"))
-
+# Load raw counts data
+female_counts <- read_csv(file = here("data", "02_counts_filtered_female.csv"))
+female_metadata <- read_csv(file = here("data", "02_female_metadata.csv"))
 ```
 
 ```{r}
-
+# collect sample names
 counts_samples <- colnames(female_counts)[-1]  
 meta_samples <- female_metadata |> 
                 pull(external_id)
 
+# find sample names that are in the counts data and in the meta data
 overlapping_samples <- intersect(counts_samples, meta_samples)
 
+# select all overlapping samples counts and meta data
 counts_checked <- female_counts |> 
-                  dplyr::select(c("gene_id", all_of(overlapping_samples)))  
-
+                  select(c("gene_id", all_of(overlapping_samples)))  
 meta_checked <- female_metadata |>
                 filter(external_id %in% overlapping_samples)
 
+# create a gene expression matrix
 BRCA_counts_matrix <- counts_checked |> 
                       column_to_rownames("gene_id")
 
+# check if the gene expression matrix was constructed correctly
 if (!all(colnames(BRCA_counts_matrix) %in% meta_checked$external_id)) {
   stop("Mismatch between column names in counts matrix and metadata external IDs.")
 }
@@ -59,24 +61,24 @@ meta_checked <- meta_checked |>
 if (!all(meta_checked$external_id == colnames(BRCA_counts_matrix))) {
   stop("Column order in counts matrix does not match metadata order.")
 }
-
-
 ```
 
 ## Building the deseq object
 
 ```{r}
+# Prepare the DESeq object
 dds <- DESeqDataSetFromMatrix(countData = BRCA_counts_matrix,
                        colData = meta_checked,
                        design = ~ cancer_status)
-dds <- DESeq(dds)
-res <- results(dds)
 
+# run DESeq
+dds <- DESeq(dds)
+# Extract the results
+res <- results(dds)
 ```
 
 ```{r}
 summary(res)
-
 ```
 
 ```{r}
@@ -89,37 +91,33 @@ res_df <- res |>
 ## Volcano plot
 
 ```{r}
+# Plot DESeq results
 ggplot(res_df, 
        aes(x = log2FoldChange, 
            y = -log10(padj), 
            color = significant)) +
-  
   geom_point(size = 2, alpha = 0.7) + 
   scale_color_manual(values = c("grey", "red")) +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "blue") +
   geom_vline(xintercept = c(-1, 1), linetype = "dashed", color = "blue") +
   geom_text(data = subset(res_df, padj < 0.01 & abs(log2FoldChange) > 2), 
             aes(label = gene), size = 3, vjust = -0.5) +
-  
   labs(x = "Log2 Fold Change", 
        y = "-Log10 Adjusted P-value", 
        title = "Volcano Plot",
        subtitle = "Differential Gene Expression",
        caption = "Blue dashed lines indicate significance thresholds") + 
-  
   theme_minimal(base_size = 14) 
 
-ggsave(file.path(results_data_path,"04_volcano_plot.png"), 
+ggsave(here("results","04_volcano_plot.png"), 
        plot = last_plot(), 
        width = 10, height = 6, dpi = 300,
        bg = "white")
 ```
 
 ```{r}
-
-results_data_path <- here("results")
-write_csv(res_df, file.path(results_data_path,"05_deseq_results.csv"))
-
+# save DESeq results in results folder
+write_csv(res_df, here("results", "05_deseq_results.csv"))
 ```
 
 ## Genes
@@ -128,60 +126,43 @@ write_csv(res_df, file.path(results_data_path,"05_deseq_results.csv"))
 res_df
 ```
 
-
 ## Look for gene sets
 
 ```{r}
+# generate gene sets
 gene_sets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP")
-gene_sets_o <- split(x = gene_sets$gene_symbol, f = gene_sets$gs_name)
-```
 
-```{r}
-gene_sets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP")
-# gene_sets <- split(x = gene_sets$gene_symbol, f = gene_sets$gs_name)
-```
-
-```{r}
-# NEW CODE please check if really equal Im to tired
 name = gene_sets |>
   pull(gs_name) |>
   unique()
 
-gene_sets_t <- gene_sets |>
+gene_sets <- gene_sets |>
   group_by(gs_name) |>
   group_map(~ pull(.x, gene_symbol)) |>
   set_names(name)
 ```
 
-```{r}
-head(gene_sets_o)
-
-head(gene_sets_t)
-```
 We can see that the gene_sets contain the ensemble gene without the gene version id while our data contains the version. So before proceeding, we should first change the names in our columns:
 
 ```{r}
+# load DESeq results
+res_df <- read.csv(here("data", "deseq_results.csv"))
 
-res_df<-read.csv(here("data", "deseq_results.csv"))
-
-cols<-c("gene","stat")
-
-ranked_genes<- res_df |> 
-                  dplyr::select((cols))
-
+# generate a ranked gene data frame
+ranked_genes <- res_df |> 
+  select(c("gene","stat"))
 
 ranked_genes <- ranked_genes |> 
-              separate(gene, into = c("ensembl_gene", "version"), 
-                       sep = "\\.", remove = TRUE) |> 
-              dplyr::select(-version)
-
-ranked_genes
-
+  separate(gene, 
+           into = c("ensembl_gene", "version"), 
+           sep = "\\.", remove = TRUE) |> 
+  select(-version)
 ```
 
 ```{r}
 
-ensembld_ids<-ranked_genes |> pull(ensembl_gene)
+ensembld_ids <- ranked_genes |>
+  pull(ensembl_gene)
 
 ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 
@@ -194,42 +175,34 @@ ranked_genes_with_symbols <- merge(ranked_genes, gene_mapping,
                                    by.x = "ensembl_gene", 
                                    by.y = "ensembl_gene_id")
 
-ranked_genes_named <- setNames(ranked_genes_with_symbols$stat, ranked_genes_with_symbols$hgnc_symbol)
-```
-```{r}
+# ranked_genes_named <- setNames(ranked_genes_with_symbols$stat, ranked_genes_with_symbols$hgnc_symbol)
 hgnc_symbol = ranked_genes_with_symbols |>
   pull(hgnc_symbol)
 
-ranked_genes_named_t = ranked_genes_with_symbols |>
+ranked_genes_named = ranked_genes_with_symbols |>
   pull(stat) |>
   set_names(hgnc_symbol)
 ```
 
 ```{r}
-head(ranked_genes_named)
+common_genes <- intersect(names(ranked_genes_named), unlist(gene_sets))
 ```
-
-```{r}
-common_genes <- intersect(names(ranked_genes_named), unlist(gene_sets_t))
-
-```
-
 
 ## fgsea
 
 ```{r}
-fgsea_res <- fgsea(pathways = gene_sets_t,
+fgsea_res <- fgsea(pathways = gene_sets,
                    stats = ranked_genes_named)
-
 ```
+
 ```{r}
 head(fgsea_res)
 ```
 
 ```{r}
 topPathways <- fgsea_res  |> 
-                dplyr::arrange(padj) |> 
-                dplyr::slice(1:10)  
+                arrange(padj) |> 
+                slice(1:10)  
 
 ggplot(topPathways, 
        mapping = aes(x = reorder(pathway, NES), 
@@ -248,4 +221,3 @@ ggsave(here("data", "04_top_10_enriched_pathways.png"),
        width = 10, height = 6, dpi = 300,
        bg = "white")
 ```
-
