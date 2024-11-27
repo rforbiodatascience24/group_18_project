@@ -21,16 +21,9 @@ library("tidyverse")
 Now that we have already imported the necessary libraries, we proceed to load the files and tidy them
 
 ```{r}
-#| silent: true
-raw_data_path <- here("_raw")
-processed_data_path <- here("data")
-
-normalized_counts<-read_csv(file = file.path(raw_data_path,
-                                             "01_BRCA_tpm_counts.csv"))
-counts <- read_csv(file = file.path(raw_data_path,
-                                    "01_BRCA_counts.csv"))
-metadata <- read_csv(file = file.path(raw_data_path,
-                                      "01_BRCA_metadata.csv"))
+normalized_counts <- read_csv(here("_raw", "01_BRCA_tpm_counts.csv"))
+counts <- read_csv(here("_raw", "01_BRCA_counts.csv"))
+metadata <- read_csv(here("_raw", "01_BRCA_metadata.csv"))
 
 ```
 
