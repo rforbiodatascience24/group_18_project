@@ -32,47 +32,69 @@ counts_filtered_male <- read_csv(here("data","02_counts_filtered_male.csv"))
 
 ## Age
 
+Plot age distribution
+
 ```{r}
-box_plot(female_metada,
-         cancer_status,age_at_diag)
-box_plot(male_metadata,
-         cancer_status,age_at_diag)
+ggplot(data = female_metadata,
+       map = aes(x = cancer_status,
+                 y = age_at_diag)) +
+  geom_boxplot() +
+  labs(title = "Age distribution of female patients",
+       x = "cancer status",
+       y = "age at diagnosis") +
+  theme_light()
+
+ggplot(data = male_metadata,
+       map = aes(x = cancer_status,
+                 y = age_at_diag)) +
+  geom_boxplot() +
+  labs(title = "Age distribution of male patients",
+       x = "cancer status",
+       y = "age at diagnosis") +
+  theme_light()
 ```
 
 ## Country
 
+Plot the country of our patients distribution:
+
 ```{r}
-ggplot(data = female_metada,
-       map = aes(
-         x = country
-       )) +
-  geom_bar()
+ggplot(data = female_metadata,
+       map = aes(x = country)) +
+  geom_bar() +
+  labs(title = "Origin of female patients") +
+  theme_light()
 ```
 
 ```{r}
 ggplot(data = male_metadata,
-       map = aes(
-         x = country
-       )) +
-  geom_bar()
+       map = aes(x = country)) +
+  geom_bar() +
+  labs(title = "Origin of male patients") +
+  theme_light()
 ```
 
 ## Cancer Types
 
+Plot the distribution of cancer types in our data set:
+
 ```{r}
-ggplot(data = female_metada,
-       map = aes(
-         x = histol_type,
-         fill = sample_type
-       ))+
+ggplot(data = female_metadata,
+       map = aes(x = histol_type,
+                 fill = sample_type)) +
   geom_bar(position = "dodge") + 
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  labs(title = "Distribution of Histol types",
+       x = "histol type",
+       fill = "sample type")
 ```
 
 ## RNA Expression Distribution
 
-```{r}
+WHAT IS THIS CODE BLOCK DOING?! PLEASE FIX
 
+```{r}
 rand_gene_expression <- counts_filtered_female |> 
   slice_sample(n = 1000) |> 
   pivot_longer(cols = -gene_id,
@@ -80,13 +102,13 @@ rand_gene_expression <- counts_filtered_female |>
                values_to = "GeneCount")
 
 
-
 ggplot(data = rand_gene_expression,
-       map = aes(
-         x = GeneCount,
-         col = gene_id
-       )) +
+       map = aes(x = GeneCount,
+                 col = gene_id)) +
   geom_density() + 
   theme(legend.position = "None") +
-  xlim(0,1000)
+  xlim(0,1000) + 
+  theme_light() +
+  labs(title = "Distribution of RNA Expression",
+       x = "Gene count")
 ```
