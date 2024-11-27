@@ -45,7 +45,7 @@ print(cols_all_nan)
 
 ```
 
-For those columns all values are nan. Also there are some columns that are not relevant, so we can remove all of them:
+For those columns all values are Nan. Also there are some columns that are not relevant, so we can remove all of them:
 
 ```{r}
 
@@ -61,6 +61,8 @@ columns_to_remove<-c("rail_id",
 clean_metadata <- metadata |> 
                   select(-all_of(columns_to_remove))
 ```
+
+Our final metadata looks like this:
 
 ```{r}
 head(clean_metadata)
