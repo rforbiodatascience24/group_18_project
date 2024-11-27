@@ -158,8 +158,6 @@ genes_with_zero_variance <- counts |>
                 ungroup() |> 
                 filter(variance == 0) |> 
                 pull(gene_id)
-                
-
 ```
 
 ```{r}
@@ -186,13 +184,13 @@ head(cleaned_counts)
 
 ```{r}
 
-samples_male<-c(samples_male, 
+samples_male <- c(samples_male, 
                 "gene_id")
-samples_females<-c(samples_females,
+samples_females <- c(samples_females,
                    "gene_id")
 
 
-counts_filtered_male<-cleaned_counts |> 
+counts_filtered_male <- cleaned_counts |> 
                       select(all_of(samples_male))
 
 normlized_counts_filtered_male<-normalized_counts |> 
