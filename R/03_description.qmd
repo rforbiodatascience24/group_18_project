@@ -9,10 +9,9 @@ editor: visual
 ```{r}
 #| silent: true
 #| message: false
-library("tidyverse")
+
 library("here")
-library("dplyr")
-source("99_proj_func.R")
+library("tidyverse")
 ```
 
 Now that we have already imported the necessary libraries, we proceed to load the files and merge them
