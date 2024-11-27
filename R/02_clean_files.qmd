@@ -13,9 +13,9 @@ From recount3, we have downloaded the files and save them to \_raw folder. Now w
 ```{r}
 #| silent: true
 #| message: false
-library("tidyverse")
+
 library("here")
-library("dplyr")
+library("tidyverse")
 ```
 
 Now that we have already imported the necessary libraries, we proceed to load the files and tidy them
@@ -142,7 +142,6 @@ samples_females<- female_metada |>
 
 
 ```
-
 
 # Removing genes with 0 variance
 
