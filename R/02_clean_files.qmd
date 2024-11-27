@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## Cleaning Data set
+# Cleaning Data set
 
 From recount3, we have downloaded the files and save them to \_raw folder. Now we will clean the data.
 
@@ -37,7 +37,7 @@ print(dim(counts))
 
 -   In the metadata file, we would expect the same number of patients, but in this case as rows. And we can see from importing the file that actually there are 1256 rows and 18 columns
 
-## Clean metadata columns
+# Clean metadata
 
 ```{r}
 # Find all columns that only consists of NA values
@@ -149,9 +149,14 @@ samples_females<- female_metada |>
               pull(external_id)
 ```
 
-# Removing genes with 0 variance
+------------------------------------------------------------------------
+
+# Clean counts data
+
+To reduce the size of our count data frames we decided to remove all genes that have zero variance across all our samples.
 
 ```{r}
+# Find genes with zero variance
 genes_with_zero_variance <- counts |> 
                 rowwise() |> 
                 mutate(variance = var(c_across(where(is.numeric)))) |>
@@ -161,6 +166,7 @@ genes_with_zero_variance <- counts |>
 ```
 
 ```{r}
+# remove those genes from raw counts and tpm counts
 cleaned_counts <- counts |> 
                   filter(!gene_id %in% genes_with_zero_variance)
 
@@ -171,16 +177,20 @@ cleaned_tpm_counts <- normalized_counts |>
 ```
 
 ```{r}
+# print the new dimensions of the data frames
 print(dim(cleaned_counts))
 print(dim(cleaned_tpm_counts))
 
 ```
 
 ```{r}
+# Show an example of the new counts
 head(cleaned_counts)
 ```
 
-## Filtering counts by samples
+## Filtering counts by sex
+
+Next we divide our data into smaller chunks of data by dividing it based on the patients sex.
 
 ```{r}
 
@@ -206,10 +216,9 @@ normlized_counts_filtered_female<-normalized_counts |>
 
 ## Writing the cleaned and filtered data
 
+After cleaning all the raw data we are saving the new data to the data folder
+
 ```{r}
-
-
-
 processed_data_path <- here("data")
 
 #METADATA
