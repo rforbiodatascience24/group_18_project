@@ -72,7 +72,7 @@ head(clean_metadata)
 
 ## Check the values in column cancer status
 
-For our later analysis we want to group our data by their cancer status. To do so we need to remove all entries with NaN as cancer status
+For our later analysis we want to group our data by their cancer status. To do so we need to remove all entries with Na as cancer status
 
 ```{r}
 # metadata entries before removel of na as cancer status
@@ -172,15 +172,12 @@ cleaned_counts <- counts |>
 
 cleaned_tpm_counts <- normalized_counts |> 
                       filter(!gene_id %in% genes_with_zero_variance)
-
-
 ```
 
 ```{r}
 # print the new dimensions of the data frames
 print(dim(cleaned_counts))
 print(dim(cleaned_tpm_counts))
-
 ```
 
 ```{r}
@@ -193,23 +190,22 @@ head(cleaned_counts)
 Next we divide our data into smaller chunks of data by dividing it based on the patients sex.
 
 ```{r}
+# columns to keep
+samples_male <- c(samples_male, "gene_id")
+samples_females <- c(samples_females, "gene_id")
 
-samples_male <- c(samples_male, 
-                "gene_id")
-samples_females <- c(samples_females,
-                   "gene_id")
-
-
+# male data
 counts_filtered_male <- cleaned_counts |> 
                       select(all_of(samples_male))
 
-normlized_counts_filtered_male<-normalized_counts |> 
+n_counts_filtered_male<-normalized_counts |> 
                       select(all_of(samples_male))
 
+# female data
 counts_filtered_female<-cleaned_counts |> 
                       select(all_of(samples_females))
 
-normlized_counts_filtered_female<-normalized_counts |> 
+n_counts_filtered_female<-normalized_counts |> 
                       select(all_of(samples_females))
 
 ```
@@ -219,34 +215,15 @@ normlized_counts_filtered_female<-normalized_counts |>
 After cleaning all the raw data we are saving the new data to the data folder
 
 ```{r}
-processed_data_path <- here("data")
+# save metadata
+write_csv(male_metadata, here("data", "02_male_metadata.csv"))
+write_csv(female_metada, here("data", "02_female_metadata.csv"))
 
-#METADATA
-write_csv(male_metadata, 
-          file = file.path(processed_data_path,
-                    "02_male_metadata.csv"))
-write_csv(female_metada,
-          file = file.path(processed_data_path,
-                    "02_female_metadata.csv"))
+# save raw counts
+write_csv(counts_filtered_male, here("data", "02_counts_filtered_male.csv"))
+write_csv(counts_filtered_female, here("data", "02_counts_filtered_female.csv"))
 
-#COUNTS NORMALIZED
-
-write_csv(counts_filtered_male,
-          file.path(processed_data_path,
-                    "02_counts_filtered_male.csv"))
-write_csv(counts_filtered_female,
-          file.path(processed_data_path,
-                    "02_counts_filtered_female.csv"))
-
-#COUNTS
-
-write_csv(normlized_counts_filtered_male,
-          file.path(processed_data_path,
-                    "02_norm_counts_filtered_male.csv"))
-
-write_csv(normlized_counts_filtered_female,
-          file.path(processed_data_path,
-          "02_norm_counts_filtered_female.csv"))
-
-
+# save normalised counts
+write_csv(n_counts_filtered_male, here("data", "02_norm_counts_filtered_male.csv"))
+write_csv(n_counts_filtered_female, here("data", "02_norm_counts_filtered_female.csv"))
 ```
