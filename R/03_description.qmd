@@ -46,20 +46,34 @@ if (!exists("counts_filtered_male")) {
 ## Age
 
 ```{r}
-box_plot(female_metada,
+female_bp <- box_plot(female_metada,
          cancer_status,age_at_diag)
 box_plot(male_metadata,
          cancer_status,age_at_diag)
+
+ggsave(here("docs/image/", "03_female_age_tumor_boxplot.png"), 
+       plot =female_bp, 
+       width = 10, height = 6, dpi = 300,
+       bg = "white")
 ```
 
 ## Country
 
 ```{r}
-ggplot(data = female_metada,
+bar_country <- ggplot(data = female_metada,
        map = aes(
-         x = country
+         x = country,
+         fill = country
        )) +
   geom_bar()
+ggsave(
+  here("docs/image/", "03_female_country_distribution.png"), 
+  plot =bar_country, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
+
 ```
 
 ```{r}
@@ -73,13 +87,21 @@ ggplot(data = male_metadata,
 ## Cancer Types
 
 ```{r}
-ggplot(data = female_metada,
+sample_histo <- ggplot(data = female_metada,
        map = aes(
          x = histol_type,
          fill = sample_type
        ))+
   geom_bar(position = "dodge") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+
+ggsave(
+  here("docs/image/", "03_sample_histo_barplot.png"), 
+  plot =sample_histo, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
 ```
 
 ## RNA Expression Distribution
@@ -94,7 +116,16 @@ rand_gene_expression <- counts_filtered_female |>
 
 
 
-ggplot(data = rand_gene_expression,
+wide <- ggplot(data = rand_gene_expression,
+       map = aes(
+         x = GeneCount,
+         col = gene_id
+       )) +
+  geom_density() + 
+  theme(legend.position = "None") +
+  xlim(0,6000)
+
+middle <-  ggplot(data = rand_gene_expression,
        map = aes(
          x = GeneCount,
          col = gene_id
@@ -102,4 +133,39 @@ ggplot(data = rand_gene_expression,
   geom_density() + 
   theme(legend.position = "None") +
   xlim(0,1000)
+
+small <-  ggplot(data = rand_gene_expression,
+       map = aes(
+         x = GeneCount,
+         col = gene_id
+       )) +
+  geom_density() + 
+  theme(legend.position = "None") +
+  xlim(0,100)
+
+
+
+ggsave(
+  here("docs/image/", "03_rna_distribution_wide.png"), 
+  plot =wide, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
+
+
+ggsave(
+  here("docs/image/", "03_rna_distribution_middle.png"), 
+  plot =middle, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
+ggsave(
+  here("docs/image/", "03_rna_distribution_close.png"), 
+  plot =small, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
 ```
