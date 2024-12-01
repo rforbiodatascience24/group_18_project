@@ -12,15 +12,15 @@ editor: source
 
 ::: {layout-ncol=3}
 
-![Most common cancer in women worldwide](image/cancer_ribbon.png){.fragment .fragment-1}
+![Most common cancer in women worldwide](image/cancer_ribbon.png)
 
 
-![1 in 8 diagnosed ](image/cancer_women.jpeg){.fragment .fragment-2}
+![1 in 8 diagnosed ](image/cancer_women.jpeg)
 
-![Many subtypes require a large collection of data](image/TCIA_logo.png){.fragment .fragment-3}
+![Many subtypes require a large collection of data](image/TCIA_logo.png)
 :::
 
-Question: Which genes are differentially expressed in different subtypes of cancer
+Question: Which genes are differentially expressed in different subtypes of cancer?
 
 
 ## General workflow
@@ -41,7 +41,7 @@ Question: Which genes are differentially expressed in different subtypes of canc
 
 ![Ratio between male and female](../results/02_male_female_ratio.png)
 
-![Age of femmale patients stratified by cancer status](../results/03_female_age_distribution.png)
+![Age of femmale patients stratified by cancer status](../results/03_female_age_diagnosis_boxplot.png)
 
 
 ![Country of origin of female patients](../results/03_female_country_distribution.png)
@@ -50,28 +50,42 @@ Question: Which genes are differentially expressed in different subtypes of canc
 :::
 
 
-## ANALYSIS:
 
+
+
+
+## DESEQ Analysis: 
 
 ::: {.cell layout-align="center"}
-![Male-female ratio](../results/04_volcano_plot.png){width="30%"}
+![DESEQ workflow](image/deseq_analysis.png){width="30%"}
 :::
-We can see that many of the differentially expressed genes are on the left side of the volcano plot.
 
-## DESEQ Analysis: Top pathaways affected by DE genes
+## DESEQ ANALYSIS:{.smaller}
 
+::: {layout-ncol=2 style="max-width: 80%;"}
+
+![Gene ENSG00000206585 ](../results/04_boxplot_ENSG00000206585.png)
+
+![Gene ENSG00000206652](../results/04_boxplot_ENSG00000206652.png)
+
+
+![Enriched pathways](../results/04_top_10_enriched_pathways.png.jpeg)
+
+![Volcano plot ](../results/04_volcano_plot.png)
+:::
 
 
 ## PCA Analysis:{.smaller}
+
 Here is an analysis of PCA plots showing the scree and cumulative variance explained.
 
 ::: {layout-ncol=2}
 <div class="fragment fragment-1">
-  ![cp1](../results//pca_scree_plot.png)
+  ![Explained variance](../results/pca_scree_plot.png)
 </div>
 
 <div class="fragment fragment-2">
-  ![Cumulative](../results//cummulative.png)
+  ![Cumulative variance](../results//cummulative.png)
 </div>
 :::
 
@@ -80,26 +94,27 @@ The high dimentionality required to explain 85% of the variablity of the data sh
 ## PCA Analysis:{.smaller}
 
 
-::: {.cell layout-align="center"}
+::: {layout-ncol=2 style="max-width: 85%;"}
+<div class="fragment fragment-1">
+  ![Overlapped clustering of patients](../results/scatter.png)
+</div>
 
-![Overlapped clustering of patients](../results/scatter.png){width="30%"}
+<div class="fragment fragment-2">
+  ![Different PCs are influenced by distinct sets of genes](../results/heatmap.png)
+</div>
 :::
+- The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
 
-The clusters from patients with and without tumor overlap, meaning the PCA is not separating clearly the clusters.
 
 
 
 ## Discussion: Biological insights
 
 - We can see that the DE genes in the data affect most importantly X pathways
-- THis makes/not makes sense with the literature as 1,2,3
+- This makes/not makes sense with the literature as 1,2,3
 
 ## Conclusion:
 
-## Next steps:
-- Clustering of DE genes 
-- Identification of more subtypes with clustering
-- 
 
 
 
