@@ -101,7 +101,7 @@ Before we can save our downloaded data we need to create our folder structure.
 ```{r}
 create_folders <- function(folder_paths) {
   folder_paths |>
-    walk(~ if (!dir.exists(.x)) dir.create(.x, recursive = TRUE))
+    walk(~ if (!dir.exists(here(.x))) dir.create(here(.x), recursive = TRUE))
 }
 
 folders <- c("_raw", "data", "results")
