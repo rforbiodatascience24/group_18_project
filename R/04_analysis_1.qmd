@@ -41,7 +41,7 @@ overlapping_samples <- intersect(counts_samples, meta_samples)
 
 # select all overlapping samples counts and meta data
 counts_checked <- female_counts |> 
-                  select(c("gene_id", all_of(overlapping_samples)))  
+                  dplyr::select(c("gene_id", all_of(overlapping_samples)))  
 meta_checked <- female_metadata |>
                 filter(external_id %in% overlapping_samples)
 
@@ -146,17 +146,17 @@ We can see that the gene_sets contain the ensemble gene without the gene version
 
 ```{r}
 # load DESeq results
-res_df <- read.csv(here("data", "deseq_results.csv"))
+res_df <- read.csv(here("results", "05_deseq_results.csv"))
 
 # generate a ranked gene data frame
 ranked_genes <- res_df |> 
-  select(c("gene","stat"))
+  dplyr::select(c("gene","stat"))
 
 ranked_genes <- ranked_genes |> 
   separate(gene, 
            into = c("ensembl_gene", "version"), 
            sep = "\\.", remove = TRUE) |> 
-  select(-version)
+  dplyr::select(-version)
 ```
 
 ```{r}
@@ -202,7 +202,7 @@ head(fgsea_res)
 ```{r}
 topPathways <- fgsea_res  |> 
                 arrange(padj) |> 
-                slice(1:10)  
+                dplyr::slice(1:10)  
 
 ggplot(topPathways, 
        mapping = aes(x = reorder(pathway, NES), 
