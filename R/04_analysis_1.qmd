@@ -80,7 +80,6 @@ dds <- DESeqDataSetFromMatrix(countData = BRCA_counts_matrix,
                        colData = meta_checked,
                        design = ~ cancer_status)
 
-# run DESeq
 dds <- DESeq(dds)
 # Extract the results
 res <- results(dds)
@@ -129,13 +128,19 @@ ggsave(here("results","04_volcano_plot.png"),
 write_csv(res_df, here("results", "05_deseq_results.csv"))
 ```
 
+
+```{r}
+#res_df <- read.csv(here("results", "deseq_results.csv"))
+
+```
+
 ## Genes
 
 ```{r}
 res_df
 ```
 
-## Violin plot
+## Boxplots
 
 It would be nice to check how "different" some of the gene expression values are across the samples as a way to visualize some of the DESEQ reults. To do so, we will select the relevant genes from the counts data and merge it with the metadata. Doing so, we will be able to make a plot to visualize the results.
 
@@ -158,13 +163,21 @@ Lets transpose the data to be able to merge it with the metadata file.
 
 filtered_female_counts_t <- filtered_female_counts |> 
   t() |> 
-  as.data.frame() |>  row_to_names(row_number = 1)  
+  as.data.frame() |>  row_to_names(row_number = 1) 
 
+
+filtered_female_counts_t <- filtered_female_counts_t |> 
+  rownames_to_column(var = "external_id")
 
 head(filtered_female_counts_t)
 ```
 
 ```{r}
+
+
+merged_df <- filtered_female_counts_t |> 
+            full_join(meta_checked,by="external_id")
+
 
 merged_df <- merged_df |> 
              mutate(across(all_of(significant_genes), as.numeric)) 
@@ -257,7 +270,7 @@ ranked_genes_with_symbols <- merge(ranked_genes, gene_mapping,
                                    by.x = "ensembl_gene", 
                                    by.y = "ensembl_gene_id")
 
-# ranked_genes_named <- setNames(ranked_genes_with_symbols$stat, ranked_genes_with_symbols$hgnc_symbol)
+
 hgnc_symbol = ranked_genes_with_symbols |>
   pull(hgnc_symbol)
 
