@@ -53,16 +53,19 @@ meta_checked <- female_metadata |>
 BRCA_counts_matrix <- counts_checked |> 
                       column_to_rownames("gene_id")
 
-# check if the gene expression matrix was constructed correctly
-if (!all(colnames(BRCA_counts_matrix) %in% meta_checked |> pull(external_id))){
+ids_to_check<-meta_checked |> pull(external_id)
+# check column names in counts match row names in metadata
+if (!all(colnames(BRCA_counts_matrix) %in% ids_to_check)) {
   stop("Mismatch between column names in counts matrix and metadata external IDs.")
 }
 
+# reorder metadata to match the order of columns in counts matrix
 meta_checked <- meta_checked |>
-                filter(external_id %in% colnames(BRCA_counts_matrix)) |>
-                arrange(match(external_id, colnames(BRCA_counts_matrix)))
+  filter(external_id %in% colnames(BRCA_counts_matrix)) |>
+  arrange(match(external_id, colnames(BRCA_counts_matrix)))
 
-if (!all(meta_checked |> pull(external_id)== colnames(BRCA_counts_matrix))) {
+# ensure order consistency
+if (!all(ids_to_check == colnames(BRCA_counts_matrix))) {
   stop("Column order in counts matrix does not match metadata order.")
 }
 ```
@@ -226,7 +229,6 @@ We can see that the gene_sets contain the ensemble gene without the gene version
 # load DESeq results
 #res_df <- read.csv(here("data", "deseq_results.csv"))
 
-# generate a ranked gene data frame
 # generate a ranked gene data frame
 ranked_genes<- res_df |> 
   dplyr::select(c("gene","stat")) |> 
