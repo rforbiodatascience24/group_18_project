@@ -18,6 +18,8 @@ library("fgsea")
 library("msigdbr")
 library("biomaRt")
 library("tidyverse")
+library("janitor")
+
 ```
 
 # DESEQ analysis
@@ -29,6 +31,8 @@ library("tidyverse")
 female_counts <- read_csv(file = here("data", "02_counts_filtered_female.csv"))
 female_metadata <- read_csv(file = here("data", "02_female_metadata.csv"))
 ```
+
+Now, we need to run some checks both in the metadata and counts data to ensure that we can generate a deseq object correctly. Deseq requires that both the metadata and counts data samples match both in name and order:
 
 ```{r}
 # collect sample names
@@ -50,7 +54,7 @@ BRCA_counts_matrix <- counts_checked |>
                       column_to_rownames("gene_id")
 
 # check if the gene expression matrix was constructed correctly
-if (!all(colnames(BRCA_counts_matrix) %in% meta_checked$external_id)) {
+if (!all(colnames(BRCA_counts_matrix) %in% meta_checked |> pull(external_id))){
   stop("Mismatch between column names in counts matrix and metadata external IDs.")
 }
 
@@ -58,12 +62,14 @@ meta_checked <- meta_checked |>
                 filter(external_id %in% colnames(BRCA_counts_matrix)) |>
                 arrange(match(external_id, colnames(BRCA_counts_matrix)))
 
-if (!all(meta_checked$external_id == colnames(BRCA_counts_matrix))) {
+if (!all(meta_checked |> pull(external_id)== colnames(BRCA_counts_matrix))) {
   stop("Column order in counts matrix does not match metadata order.")
 }
 ```
 
 ## Building the deseq object
+
+This might take a while..
 
 ```{r}
 # Prepare the DESeq object
@@ -84,7 +90,7 @@ summary(res)
 ```{r}
 res_df <- res |>
           as_tibble(rownames = "gene") |>  
-           filter(!is.na(stat)) |> 
+           filter(!is.na(padj)) |> 
           mutate(significant = padj < 0.01) 
 ```
 
@@ -126,6 +132,78 @@ write_csv(res_df, here("results", "05_deseq_results.csv"))
 res_df
 ```
 
+## Violin plot
+
+It would be nice to check how "different" some of the gene expression values are across the samples as a way to visualize some of the DESEQ reults. To do so, we will select the relevant genes from the counts data and merge it with the metadata. Doing so, we will be able to make a plot to visualize the results.
+
+```{r}
+significant_genes <- res_df |> 
+  filter(padj < 0.01 & abs(log2FoldChange) > 5) |> 
+  pull(gene) 
+
+
+filtered_female_counts <- counts_checked |> 
+  filter(gene_id %in% significant_genes)
+
+```
+
+
+Lets transpose the data to be able to merge it with the metadata file.
+
+
+```{r}
+
+filtered_female_counts_t <- filtered_female_counts |> 
+  t() |> 
+  as.data.frame() |>  row_to_names(row_number = 1)  
+
+
+head(filtered_female_counts_t)
+```
+
+```{r}
+
+merged_df <- merged_df |> 
+             mutate(across(all_of(significant_genes), as.numeric)) 
+
+
+gene_A_plot<-ggplot(merged_df, aes(x = cancer_status, y = ENSG00000206652.1, fill = cancer_status)) +
+  geom_boxplot(outlier.shape = NA) +
+  theme_minimal() +
+  labs(
+    title = "Boxplot for gene: ENSG00000206652, by Cancer Status",
+    x = "Cancer Status",
+    y = "Counts"
+  ) +
+  coord_cartesian(ylim = c(0, 200))  
+
+
+ggsave(here("results", paste("04_boxplot_ENSG00000206652.png")), 
+       plot = gene_A_plot, 
+       width = 10, height = 6, dpi = 300,
+       bg = "white")
+```
+
+
+```{r}
+
+gene_B_plot<-ggplot(merged_df, aes(x = cancer_status, y = ENSG00000206585.1, fill = cancer_status)) +
+  geom_boxplot(outlier.shape = NA) +
+  theme_minimal() +
+  labs(
+    title = "Boxplot for gene: ENSG00000206585, by Cancer Status",
+    x = "Cancer Status",
+    y = "Counts"
+  ) +
+  coord_cartesian(ylim = c(0, 300))  
+
+
+ggsave(here("results", paste("04_boxplot_ENSG00000206585.png")), 
+       plot = gene_B_plot, 
+       width = 10, height = 6, dpi = 300,
+       bg = "white")
+```
+
 ## Look for gene sets
 
 ```{r}
@@ -146,11 +224,13 @@ We can see that the gene_sets contain the ensemble gene without the gene version
 
 ```{r}
 # load DESeq results
-res_df <- read.csv(here("results", "05_deseq_results.csv"))
+#res_df <- read.csv(here("data", "deseq_results.csv"))
 
 # generate a ranked gene data frame
-ranked_genes <- res_df |> 
-  dplyr::select(c("gene","stat"))
+# generate a ranked gene data frame
+ranked_genes<- res_df |> 
+  dplyr::select(c("gene","stat")) |> 
+  filter(!is.na(stat)) 
 
 ranked_genes <- ranked_genes |> 
   separate(gene, 
@@ -179,7 +259,7 @@ ranked_genes_with_symbols <- merge(ranked_genes, gene_mapping,
 hgnc_symbol = ranked_genes_with_symbols |>
   pull(hgnc_symbol)
 
-ranked_genes_named = ranked_genes_with_symbols |>
+ranked_genes_named <- ranked_genes_with_symbols |>
   pull(stat) |>
   set_names(hgnc_symbol)
 ```
@@ -216,7 +296,7 @@ ggplot(topPathways,
        title = "Top 10 Enriched Pathways") +
   theme_minimal()
 
-ggsave(here("data", "04_top_10_enriched_pathways.png"), 
+ggsave(here("results", "04_top_10_enriched_pathways.png"), 
        plot = last_plot(), 
        width = 10, height = 6, dpi = 300,
        bg = "white")
