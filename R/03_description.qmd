@@ -17,6 +17,7 @@ library("tidyverse")
 Now that we have already imported the necessary libraries, we proceed to load the files and merge them
 
 ```{r}
+
 # load metadata
 female_metadata <- read_csv(here("data","02_female_metadata.csv"))
 male_metadata <- read_csv(here("data", "02_male_metadata.csv"))
@@ -35,18 +36,8 @@ counts_filtered_male <- read_csv(here("data","02_counts_filtered_male.csv"))
 Plot age distribution
 
 ```{r}
-# commented from main
-#female_bp <- box_plot(female_metada,
- #        cancer_status,age_at_diag)
-#box_plot(male_metadata,
- #        cancer_status,age_at_diag)
 
-#ggsave(here("docs/image/", "03_female_age_tumor_boxplot.png"), 
- #      plot =female_bp, 
-  #     width = 10, height = 6, dpi = 300,
-   #    bg = "white")
-
-ggplot(data = female_metadata,
+female_bp <- ggplot(data = female_metadata,
        map = aes(x = cancer_status,
                  y = age_at_diag)) +
   geom_boxplot() +
@@ -55,7 +46,7 @@ ggplot(data = female_metadata,
        y = "age at diagnosis") +
   theme_light()
 
-ggplot(data = male_metadata,
+male_bp <- ggplot(data = male_metadata,
        map = aes(x = cancer_status,
                  y = age_at_diag)) +
   geom_boxplot() +
@@ -63,6 +54,25 @@ ggplot(data = male_metadata,
        x = "cancer status",
        y = "age at diagnosis") +
   theme_light()
+
+
+ggsave(
+  here("results", "03_female_age_distribution.png"), 
+  plot =female_bp, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
+
+
+ggsave(
+  here("results", "03_male_age_distribution.png"), 
+  plot =male_bp, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
+
 
 ```
 
@@ -88,20 +98,24 @@ ggsave(
   bg = "white")
 
 
-ggplot(data = female_metadata,
-       map = aes(x = country,
-                 fill = country)) +
-  geom_bar() +
-  labs(title = "Origin of female patients") +
-  theme_light()
 ```
 
 ```{r}
-ggplot(data = male_metadata,
-       map = aes(x = country)) +
+bar_country_male <- ggplot(data = male_metadata,
+       map = aes(x = country,
+              fill = country)) +
   geom_bar() +
   labs(title = "Origin of male patients") +
   theme_light()
+
+
+ggsave(
+  here("results", "03_male_country_distribution.png"), 
+  plot =bar_country_male, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
 ```
 
 ## Cancer Types
@@ -116,13 +130,13 @@ sample_histo <- ggplot(data = female_metadata,
   geom_bar(position = "dodge") + 
   theme_light() +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  labs(title = "Distribution of Histol types",
+  labs(title = "Distribution of Histological types",
        x = "histol type",
        fill = "sample type")
 
 
 ggsave(
-  here("docs/image/", "03_sample_histo_barplot.png"), 
+  here("results", "03_sample_histo_barplot.png"), 
   plot =sample_histo, 
   width = 10, 
   height = 6, 
