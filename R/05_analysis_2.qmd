@@ -27,7 +27,7 @@ data_females <- read_csv(file = file.path(processed_data_path, "02_norm_counts_f
 
 metadata_females <- read_csv(file = file.path(processed_data_path, "02_female_metadata.csv"))
 
-deseq <- read_csv(file = file.path(processed_data_path, "deseq_results.csv"))
+deseq <- read_csv(file = file.path(here("results"), "05_deseq_results.csv"))
 ```
 
 # Preprocess data
