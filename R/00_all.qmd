@@ -1,0 +1,58 @@
+---
+title: "00_all"
+format: html
+editor: visual
+---
+
+# Run complete project
+
+By running this quarto document, the entire project will be run.
+
+
+```{r}
+library("quarto")
+library("here")
+```
+
+
+```{r}
+source("99_proj_func.R")
+
+```
+
+## Import + Tidy
+
+### Download and write data
+
+```{r}
+quarto::quarto_render("01_download_data.qmd")
+```
+
+##Cleaning
+
+```{r}
+quarto::quarto_render("02_clean_files.qmd")
+```
+
+## Transform - Visualize - Model
+
+
+```{r}
+quarto::quarto_render("03_description.qmd")
+```
+
+
+```{r}
+quarto::quarto_render("04_analysis_1.qmd")
+```
+
+
+```{r}
+quarto::quarto_render("05_analysis_2.qmd")
+```
+
+
+```{r}
+quarto::quarto_render(here("docs","project_presentation.qmd"))
+```
+
