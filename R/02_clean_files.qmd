@@ -122,11 +122,19 @@ Lets explore the metadata and genes columns a bit before merging, we might not n
 
 ```{r}
 # Plot the number of male and female patients with breast cancer
-ggplot(data = clean_metadata,
+plt <- ggplot(data = clean_metadata,
        mapping = aes(x = sex)) +
   geom_bar() +
   labs(title = "Number of female and male patients in our dataset") +
   theme_light()
+
+ggsave(
+  here("results", "02_male_female_ratio.png"), 
+  plot =plt, 
+  width = 10, 
+  height = 6, 
+  dpi = 300,
+  bg = "white")
 ```
 
 To minimize the gender effects in the study, we are separating the patients by sex.
