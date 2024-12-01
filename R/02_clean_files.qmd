@@ -59,7 +59,7 @@ columns_to_remove <- c("rail_id",
                        "bmi")
 
 clean_metadata <- metadata |> 
-  select(-all_of(columns_to_remove))
+  dplyr::select(-all_of(columns_to_remove))
 ```
 
 Our final metadata looks like this:
@@ -105,7 +105,7 @@ So gender and sex always have the same values and are redundant! So we can remov
 ```{r}
 # remove of the gender column
 clean_metadata <- clean_metadata |> 
-  select(-all_of("gender"))
+  dplyr::select(-all_of("gender"))
 ```
 
 ## Final meta data
@@ -195,17 +195,17 @@ samples_females <- c(samples_females, "gene_id")
 
 # male data
 counts_filtered_male <- cleaned_counts |> 
-  select(all_of(samples_male))
+  dplyr::select(all_of(samples_male))
 
 n_counts_filtered_male<-normalized_counts |> 
-  select(all_of(samples_male))
+  dplyr::select(all_of(samples_male))
 
 # female data
 counts_filtered_female<-cleaned_counts |> 
-  select(all_of(samples_females))
+  dplyr::select(all_of(samples_females))
 
 n_counts_filtered_female<-normalized_counts |> 
-  select(all_of(samples_females))
+  dplyr::select(all_of(samples_females))
 ```
 
 ## Writing the cleaned and filtered data
