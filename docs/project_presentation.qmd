@@ -1,5 +1,5 @@
 ---
-title: "Group 18: Differencial expression of genes in cancer"
+title: "Group 18:  FINDING GENE PATTERNS IN BREAST CANCER DATA"
 author: "Group 18"
 format: 
   revealjs:
@@ -7,28 +7,6 @@ format:
     self-contained: TRUE
 editor: source
 ---
-## Introduction 1 {.smaller .hidden}
-{output: false}
-According to the instructions of leon, we need a 10 slide presentations so we could have the following structure:
-
-1.  Introduction
-
--   Data and problem to analyze
--   visuzalization of data
-
-2.  Materials and Methods
-
--   Libraries needed and why we are using them (recount and )
--   Which analsysis we did to the data
-
-3.  Results
-
--   Graphs with most important results
-
-4.  Disucssion
-
--   Biological insights of results
--   Conclusion based on insights
 
 ## Introduction:{.smaller}
 
@@ -39,32 +17,40 @@ According to the instructions of leon, we need a 10 slide presentations so we co
 
 ![1 in 8 diagnosed ](image/cancer_women.jpeg){.fragment .fragment-2}
 
-![Many subtypes require a large collection of data](../results/TCIA_logo.png){.fragment .fragment-3}
+![Many subtypes require a large collection of data](image/TCIA_logo.png){.fragment .fragment-3}
 :::
 
 Question: Which genes are differentially expressed in different subtypes of cancer
 
 
-## Materials and Methods 1
+## General workflow
 
 
 ::: {.cell layout-align="center"}
 ![General wokflow](image/workflow.jpeg){width="50%"}
 :::
 
-## Materials and Methods 2:{.smaller}
-
-Considerations about the data:<br>
-  - Excluded men as they represented a very small portion of the study<br>
-  - We removed uninteresting genes (variance across samples of 0) <br>
-  - Removed NAs and merged metadata with counts data
-  
+## EXPLORATORY ANALYSIS AND TIDY:{.smaller}
 ::: {.cell layout-align="center"}
-![Male-female ratio](../results/Male_female_ratio.png){width="30%"}
+![Cleaning procedure](image/cleaning_data.png){width="30%"}
 :::
 
 
-## DESEQ Analysis:
+## EXPLORATORY ANALYSIS AND TIDY:{.smaller}
+::: {layout-ncol=2 style="max-width: 80%;"}
+
+![Ratio between male and female](../results/02_male_female_ratio.png)
+
+![Age of femmale patients stratified by cancer status](../results/03_female_age_diagnosis_boxplot.png)
+
+
+![Country of origin of female patients](../results/03_female_country_distribution.png)
+
+![Hitological type of patient samples ](../results/03_sample_histo_barplot.png)
+:::
+
+
+## ANALYSIS:
 
 
 ::: {.cell layout-align="center"}
