@@ -9,3 +9,5 @@
 5. emile440 - Émile Knut Barbé - s242826 
 
 # Link to the presentation
+
+https://raw.githack.com/rforbiodatascience24/group_18_project/main/doc/presentation.html
