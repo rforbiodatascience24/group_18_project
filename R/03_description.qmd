@@ -1,5 +1,5 @@
 ---
-title: "Descriptive analysis"
+title: "03_description"
 format: html
 editor: visual
 ---
@@ -9,91 +9,117 @@ editor: visual
 ```{r}
 #| silent: true
 #| message: false
-library("tidyverse")
+
 library("here")
-library("dplyr")
-source("99_proj_func.R")
+library("tidyverse")
 ```
 
 Now that we have already imported the necessary libraries, we proceed to load the files and merge them
 
 ```{r}
-#| silent: true
+# load metadata
+female_metadata <- read_csv(here("data","02_female_metadata.csv"))
+male_metadata <- read_csv(here("data", "02_male_metadata.csv"))
 
-processed_data_path <- here("data")
-if (!exists("female_metada")) {
-  female_metada<-read_csv(file = here("data","02_female_metadata.csv"))
-}
-if (!exists("male_metadata")) {
-  male_metadata<-read_csv(file = here("data", "02_male_metadata.csv"))
-}
-if (!exists("female_norm_counts")) {
-female_norm_counts<-read_csv(file = here("data","02_norm_counts_filtered_female.csv"))
-}
-if (!exists("male_norm_counts")) {
-male_norm_counts<-read_csv(file = here("data", "02_norm_counts_filtered_male.csv"))
-}
-if (!exists("counts_filtered_female")) {
-  counts_filtered_female <- read_csv(file = here("data","02_counts_filtered_female.csv"))
-}
+# load normalised data
+female_norm_counts <- read_csv(here("data","02_norm_counts_filtered_female.csv"))
+male_norm_counts <- read_csv(here("data", "02_norm_counts_filtered_male.csv"))
 
-if (!exists("counts_filtered_male")) {
-  counts_filtered_male <- read_csv(file = here("data","02_counts_filtered_male.csv"))
-}
-
+# load raw counts data 
+counts_filtered_female <- read_csv(here("data","02_counts_filtered_female.csv"))
+counts_filtered_male <- read_csv(here("data","02_counts_filtered_male.csv"))
 ```
 
 ## Age
 
-```{r}
-female_bp <- box_plot(female_metada,
-         cancer_status,age_at_diag)
-box_plot(male_metadata,
-         cancer_status,age_at_diag)
+Plot age distribution
 
-ggsave(here("docs/image/", "03_female_age_tumor_boxplot.png"), 
-       plot =female_bp, 
-       width = 10, height = 6, dpi = 300,
-       bg = "white")
+```{r}
+# commented from main
+#female_bp <- box_plot(female_metada,
+ #        cancer_status,age_at_diag)
+#box_plot(male_metadata,
+ #        cancer_status,age_at_diag)
+
+#ggsave(here("docs/image/", "03_female_age_tumor_boxplot.png"), 
+ #      plot =female_bp, 
+  #     width = 10, height = 6, dpi = 300,
+   #    bg = "white")
+
+ggplot(data = female_metadata,
+       map = aes(x = cancer_status,
+                 y = age_at_diag)) +
+  geom_boxplot() +
+  labs(title = "Age distribution of female patients",
+       x = "cancer status",
+       y = "age at diagnosis") +
+  theme_light()
+
+ggplot(data = male_metadata,
+       map = aes(x = cancer_status,
+                 y = age_at_diag)) +
+  geom_boxplot() +
+  labs(title = "Age distribution of male patients",
+       x = "cancer status",
+       y = "age at diagnosis") +
+  theme_light()
+
 ```
 
 ## Country
 
+Plot the country of our patients distribution:
+
 ```{r}
-bar_country <- ggplot(data = female_metada,
-       map = aes(
-         x = country,
-         fill = country
-       )) +
-  geom_bar()
+
+bar_country <- ggplot(data = female_metadata,
+       map = aes(x = country,
+                 fill = country)) +
+  geom_bar() +
+  labs(title = "Origin of female patients") +
+  theme_light()
+
 ggsave(
-  here("docs/image/", "03_female_country_distribution.png"), 
+  here("results", "03_female_country_distribution.png"), 
   plot =bar_country, 
   width = 10, 
   height = 6, 
   dpi = 300,
   bg = "white")
 
+
+ggplot(data = female_metadata,
+       map = aes(x = country,
+                 fill = country)) +
+  geom_bar() +
+  labs(title = "Origin of female patients") +
+  theme_light()
 ```
 
 ```{r}
 ggplot(data = male_metadata,
-       map = aes(
-         x = country
-       )) +
-  geom_bar()
+       map = aes(x = country)) +
+  geom_bar() +
+  labs(title = "Origin of male patients") +
+  theme_light()
 ```
 
 ## Cancer Types
 
+Plot the distribution of cancer types in our data set:
+
 ```{r}
-sample_histo <- ggplot(data = female_metada,
-       map = aes(
-         x = histol_type,
-         fill = sample_type
-       ))+
+
+sample_histo <- ggplot(data = female_metadata,
+       map = aes(x = histol_type,
+                 fill = sample_type)) +
   geom_bar(position = "dodge") + 
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  labs(title = "Distribution of Histol types",
+       x = "histol type",
+       fill = "sample type")
+
 
 ggsave(
   here("docs/image/", "03_sample_histo_barplot.png"), 
@@ -102,17 +128,21 @@ ggsave(
   height = 6, 
   dpi = 300,
   bg = "white")
+
+
 ```
 
 ## RNA Expression Distribution
 
-```{r}
+WHAT IS THIS CODE BLOCK DOING?! PLEASE FIX
 
+```{r}
 rand_gene_expression <- counts_filtered_female |> 
   slice_sample(n = 1000) |> 
   pivot_longer(cols = -gene_id,
                names_to = "samples",
                values_to = "GeneCount")
+
 
 
 
@@ -146,7 +176,7 @@ small <-  ggplot(data = rand_gene_expression,
 
 
 ggsave(
-  here("docs/image/", "03_rna_distribution_wide.png"), 
+  here("results", "03_rna_distribution_wide.png"), 
   plot =wide, 
   width = 10, 
   height = 6, 
@@ -155,17 +185,28 @@ ggsave(
 
 
 ggsave(
-  here("docs/image/", "03_rna_distribution_middle.png"), 
+  here("results", "03_rna_distribution_middle.png"), 
   plot =middle, 
   width = 10, 
   height = 6, 
   dpi = 300,
   bg = "white")
 ggsave(
-  here("docs/image/", "03_rna_distribution_close.png"), 
+  here("results", "03_rna_distribution_close.png"), 
   plot =small, 
   width = 10, 
   height = 6, 
   dpi = 300,
   bg = "white")
+
+ggplot(data = rand_gene_expression,
+       map = aes(x = GeneCount,
+                 col = gene_id)) +
+  geom_density() + 
+  theme(legend.position = "None") +
+  xlim(0,1000) + 
+  theme_light() +
+  labs(title = "Distribution of RNA Expression",
+       x = "Gene count")
+
 ```

@@ -4,41 +4,118 @@ author: "Group 18"
 format: 
   revealjs:
     theme: moon
-editor: visual
+    self-contained: TRUE
+editor: source
 ---
+## Introduction 1 {.smaller .hidden}
+{output: false}
+According to the instructions of leon, we need a 10 slide presentations so we could have the following structure:
 
-## Introduction 1
+1.  Introduction
 
-According to the instructions of Liam, we need a 10 slide presentations so we could have the following structure:
+-   Data and problem to analyze
+-   visuzalization of data
 
-1. Introduction
-  -   Data and problem to analyze
-  -   visuzalization of data
-2. Materials and Methods
-  - Libraries needed and why we are using them (recount and )
-  - Which analsysis we did to the data
-  
-3. Results
-  - Graphs with most important results
-  
-4. Disucssion 
-  - Biological insights of results 
-  - Conclusion based on insights
-  
+2.  Materials and Methods
 
-## Introduction 2:
+-   Libraries needed and why we are using them (recount and )
+-   Which analsysis we did to the data
+
+3.  Results
+
+-   Graphs with most important results
+
+4.  Disucssion
+
+-   Biological insights of results
+-   Conclusion based on insights
+
+## Introduction:{.smaller}
+
+::: {layout-ncol=3}
+
+![Most common cancer in women worldwide](image/cancer_ribbon.png){.fragment .fragment-1}
+
+
+![1 in 8 diagnosed ](image/cancer_women.jpeg){.fragment .fragment-2}
+
+![Many subtypes require a large collection of data](../results/TCIA_logo.png){.fragment .fragment-3}
+:::
+
+Question: Which genes are differentially expressed in different subtypes of cancer
+
 
 ## Materials and Methods 1
 
-## Materials and Methods 2:
+
+::: {.cell layout-align="center"}
+![General wokflow](image/workflow.jpeg){width="50%"}
+:::
+
+## Materials and Methods 2:{.smaller}
+
+Considerations about the data:<br>
+  - Excluded men as they represented a very small portion of the study<br>
+  - We removed uninteresting genes (variance across samples of 0) <br>
+  - Removed NAs and merged metadata with counts data
+  
+::: {.cell layout-align="center"}
+![Male-female ratio](../results/Male_female_ratio.png){width="30%"}
+:::
 
 
-## Results 1
+## DESEQ Analysis:
 
-## Results 2
 
-## Discussion 1
+::: {.cell layout-align="center"}
+![Male-female ratio](../results/04_volcano_plot.png){width="30%"}
+:::
+We can see that many of the differentially expressed genes are on the left side of the volcano plot.
 
-## Discussion 2
+## DESEQ Analysis: Top pathaways affected by DE genes
+
+
+
+## PCA Analysis:{.smaller}
+Here is an analysis of PCA plots showing the scree and cumulative variance explained.
+
+::: {layout-ncol=2}
+<div class="fragment fragment-1">
+  ![cp1](image/pca_scree_plot.png)
+</div>
+
+<div class="fragment fragment-2">
+  ![Cumulative](image/cummulative.png)
+</div>
+:::
+
+The high dimentionality required to explain 85% of the variablity of the data shows that cancer is a difficult task
+
+## PCA Analysis:{.smaller}
+
+
+::: {.cell layout-align="center"}
+
+![Overlapped clustering of patients](../results/scatter.png){width="30%"}
+:::
+
+The clusters from patients with and without tumor overlap, meaning the PCA is not separating clearly the clusters.
+
+
+
+## Discussion: Biological insights
+
+- We can see that the DE genes in the data affect most importantly X pathways
+- THis makes/not makes sense with the literature as 1,2,3
+
+## Conclusion:
+
+## Next steps:
+- Clustering of DE genes 
+- Identification of more subtypes with clustering
+- 
+
+
+
 
 

@@ -8,8 +8,9 @@ The code in this file is used to download all the raw data we want to use in our
 
 # Load libraries
 
-```{r , message=FALSE}
+```{r}
 #| echo: false
+#| message: false
 
 library("tidyverse")
 library("recount3")
@@ -94,9 +95,12 @@ tpm_counts <- recount::getTPM(rse_gene_object) |>
 ```
 
 # Create project folders
+
+Before we can save our downloaded data we need to create our folder structure.
+
 ```{r}
 create_folders <- function(folder_paths) {
-  folder_paths %>%
+  folder_paths |>
     walk(~ if (!dir.exists(.x)) dir.create(.x, recursive = TRUE))
 }
 
