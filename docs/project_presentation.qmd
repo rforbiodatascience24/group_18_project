@@ -41,7 +41,7 @@ Question: Which genes are differentially expressed in different subtypes of canc
 
 ![Ratio between male and female](../results/02_male_female_ratio.png)
 
-![Age of femmale patients stratified by cancer status](../results/03_female_age_diagnosis_boxplot.png)
+![Age of femmale patients stratified by cancer status](../results/03_female_age_distribution.png)
 
 
 ![Country of origin of female patients](../results/03_female_country_distribution.png)
@@ -67,11 +67,11 @@ Here is an analysis of PCA plots showing the scree and cumulative variance expla
 
 ::: {layout-ncol=2}
 <div class="fragment fragment-1">
-  ![cp1](image/pca_scree_plot.png)
+  ![cp1](../results//pca_scree_plot.png)
 </div>
 
 <div class="fragment fragment-2">
-  ![Cumulative](image/cummulative.png)
+  ![Cumulative](../results//cummulative.png)
 </div>
 :::
 
