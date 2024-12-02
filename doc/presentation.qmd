@@ -42,16 +42,13 @@ Question: Which genes are differentially expressed in different subtypes of canc
 
 
 ## EXPLORATORY ANALYSIS AND TIDY:{.smaller}
-::: {layout-ncol=2 style="max-width: 80%;"}
-
+::: {.cell layout-align="center" style="max-width: 80%;"}
 ![Ratio between male and female](../results/02_male_female_ratio.png)
+:::
 
+## EXPLORATORY ANALYSIS AND TIDY:{.smaller}
+::: {.cell layout-align="center" style="max-width: 80%;"}
 ![Age of female patients stratified by cancer status](../results/03_female_age_distribution.png)
-
-
-![Country of origin of female patients](../results/03_female_country_distribution.png)
-
-![Hitological type of patient samples ](../results/03_sample_histo_barplot.png)
 :::
 
 
