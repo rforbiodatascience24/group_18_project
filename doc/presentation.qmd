@@ -104,7 +104,7 @@ The high dimentionality required to explain 85% of the variability of the data s
 </div>
 :::
 - The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
--The PCA shows significant overlap between "TUMOR FREE" and "WITH TUMOR", indicating no clear separation of cancer statuses.
+- The PCA shows significant overlap between "TUMOR FREE" and "WITH TUMOR", indicating no clear separation of cancer statuses.
 
 
 ## Discussion: Biological insights
