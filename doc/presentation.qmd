@@ -46,7 +46,7 @@ Question: Which genes are differentially expressed in different subtypes of canc
 
 ![Ratio between male and female](../results/02_male_female_ratio.png)
 
-![Age of femmale patients stratified by cancer status](../results/03_female_age_distribution.png)
+![Age of female patients stratified by cancer status](../results/03_female_age_distribution.png)
 
 
 ![Country of origin of female patients](../results/03_female_country_distribution.png)
@@ -105,7 +105,7 @@ The high dimentionality required to explain 85% of the variability of the data s
 </div>
 
 <div class="fragment fragment-2">
-  ![Overlapped clustering of patients](../results/05_scatter.png)
+  ![Overlapped clustering of tumor statuses](../results/05_scatter.png)
 </div>
 :::
 - The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
