@@ -41,7 +41,7 @@ Question: Which genes are differentially expressed in different subtypes of canc
 
 ![Ratio between male and female](../results/02_male_female_ratio.png)
 
-![Age of femmale patients stratified by cancer status](../results/03_female_age_diagnosis_boxplot.png)
+![Age of femmale patients stratified by cancer status](../results/03_female_age_distribution.png)
 
 
 ![Country of origin of female patients](../results/03_female_country_distribution.png)
@@ -81,11 +81,11 @@ Here is an analysis of PCA plots showing the scree and cumulative variance expla
 
 ::: {layout-ncol=2}
 <div class="fragment fragment-1">
-  ![Explained variance](../results/pca_scree_plot.png)
+  ![Explained variance](../results/05_pca_scree_plot.png)
 </div>
 
 <div class="fragment fragment-2">
-  ![Cumulative variance](../results//cummulative.png)
+  ![Cumulative variance](../results//05_cummulative.png)
 </div>
 :::
 
@@ -96,11 +96,11 @@ The high dimentionality required to explain 85% of the variablity of the data sh
 
 ::: {layout-ncol=2 style="max-width: 85%;"}
 <div class="fragment fragment-1">
-  ![Overlapped clustering of patients](../results/scatter.png)
+  ![Overlapped clustering of patients](../results/05_scatter.png)
 </div>
 
 <div class="fragment fragment-2">
-  ![Different PCs are influenced by distinct sets of genes](../results/heatmap.png)
+  ![Different PCs are influenced by distinct sets of genes](../results/05_heatmap.png)
 </div>
 :::
 - The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
