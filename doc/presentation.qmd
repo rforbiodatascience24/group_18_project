@@ -89,23 +89,22 @@ Here is an analysis of PCA plots showing the scree and cumulative variance expla
 </div>
 :::
 
-The high dimentionality required to explain 85% of the variablity of the data shows that cancer is a difficult task
+The high dimentionality required to explain 85% of the variability of the data shows that cancer analysis is a difficult task.
 
 ## PCA Analysis:{.smaller}
 
 
 ::: {layout-ncol=2 style="max-width: 85%;"}
 <div class="fragment fragment-1">
-  ![Overlapped clustering of patients](../results/05_scatter.png)
+  ![Overlapped clustering of patients](../results/05_heatmap.png)
 </div>
 
 <div class="fragment fragment-2">
-  ![Different PCs are influenced by distinct sets of genes](../results/05_heatmap.png)
+  ![Different PCs are influenced by distinct sets of genes](../results/05_scatter.png)
 </div>
 :::
 - The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
-
-
+-The PCA shows significant overlap between "TUMOR FREE" and "WITH TUMOR," indicating no clear separation of cancer statuses.
 
 
 ## Discussion: Biological insights
