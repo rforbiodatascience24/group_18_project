@@ -1,6 +1,11 @@
 ---
 title: "Group 18:  FINDING GENE PATTERNS IN BREAST CANCER DATA"
-author: "Group 18"
+author: 
+- "Florencia De Lillo s242869"
+- "Maria Kokali s232486"
+- "Nikolas Alexander Mumm s242825"
+- "Rodrigo Gallegos Dextre s243563"
+- "Émile Knut Barbé s242826"
 format: 
   revealjs:
     theme: moon
