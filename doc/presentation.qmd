@@ -96,11 +96,11 @@ The high dimentionality required to explain 85% of the variability of the data s
 
 ::: {layout-ncol=2 style="max-width: 85%;"}
 <div class="fragment fragment-1">
-  ![Overlapped clustering of patients](../results/05_heatmap.png)
+  ![Different PCs are influenced by distinct sets of genes](../results/05_heatmap.png)
 </div>
 
 <div class="fragment fragment-2">
-  ![Different PCs are influenced by distinct sets of genes](../results/05_scatter.png)
+  ![Overlapped clustering of patients](../results/05_scatter.png)
 </div>
 :::
 - The highlighted genes for each PC might be linked to specific biological pathways or processes, as they represent the main drivers of variance for the data.
