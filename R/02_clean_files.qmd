@@ -123,7 +123,9 @@ Lets explore the metadata and genes columns a bit before merging, we might not n
 ```{r}
 # Plot the number of male and female patients with breast cancer
 plt <- ggplot(data = clean_metadata,
-       mapping = aes(x = sex)) +
+       map = aes(
+         x = sex,
+         fill = sex)) +
   geom_bar() +
   labs(title = "Number of female and male patients in our dataset") +
   theme_light()
