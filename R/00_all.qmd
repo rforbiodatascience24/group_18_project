@@ -6,14 +6,12 @@ editor: visual
 
 # Run complete project
 
-By running this quarto document, the entire project will be run.
-
+By running this quarto document, the entire project will be run. Note: Initially we tried to use quarto::quarto_render() but this function would not let us save the generated files in a different location, there is an [issue](https://github.com/quarto-dev/quarto-cli/discussions/2171) in github and apparently could not be resolved. That is the reason why we used rmarkdown::render instead.
 
 ```{r}
 library("quarto")
 library("here")
 ```
-
 
 ```{r}
 source("99_proj_func.R")
@@ -25,34 +23,39 @@ source("99_proj_func.R")
 ### Download and write data
 
 ```{r}
-quarto::quarto_render("01_download_data.qmd")
+rmarkdown::render(here("R/01_download_data.qmd"), 
+                  output_dir = here("results"))
+
 ```
 
-##Cleaning
+## Cleaning
 
 ```{r}
-quarto::quarto_render("02_clean_files.qmd")
+rmarkdown::render(here("R/02_clean_files.qmd"), 
+                  output_dir = here("results"))
 ```
 
 ## Transform - Visualize - Model
 
-
 ```{r}
-quarto::quarto_render("03_description.qmd")
+rmarkdown::render(here("R/03_description.qmd"), 
+                  output_dir = here("results"))
 ```
 
-
 ```{r}
-quarto::quarto_render("04_analysis_1.qmd")
+rmarkdown::render(here("R/04_analysis_1.qmd"), 
+                  output_dir = here("results"))
+
 ```
 
-
 ```{r}
-quarto::quarto_render("05_analysis_2.qmd")
+
+rmarkdown::render(here("R/05_analysis_2.qmd"), 
+                  output_dir = here("results"))
+
 ```
 
-
 ```{r}
-quarto::quarto_render(here("docs","project_presentation.qmd"))
+quarto::quarto_render(
+  input = here("doc","presentation.qmd"))
 ```
-
