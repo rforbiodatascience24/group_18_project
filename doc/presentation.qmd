@@ -109,14 +109,21 @@ The high dimentionality required to explain 85% of the variability of the data s
 - The PCA shows significant overlap between "TUMOR FREE" and "WITH TUMOR", indicating no clear separation of cancer statuses.
 
 
-## Discussion: Biological insights
+## Results:
 
-- We can see that the DE genes in the data affect most importantly X pathways
-- This makes/not makes sense with the literature as 1,2,3
+- We could define genes that are significantly up or down regulated between patients groups using DESeq
+- We used fgsea to find the 10 most different gene sets:
+  - Angiogensis is strongly up-regulated 
+  - Immune response is strongly down-regulated 
+- "Interesting insights" we got:
+  - The pathway for cellular response to hydrogen peroxide is up-regulated
+  - Most down-regulated pathway is the sensory perception of taste
 
-## Conclusion:
+## Discussion:
 
-
+- Analysis of breast cancer on the level of gene expression is a complex problem
+- Many genes (and gene sets) are involved
+- Computational tools show a great potential to give further insights
 
 
 
