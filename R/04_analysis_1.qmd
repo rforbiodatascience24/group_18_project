@@ -129,7 +129,7 @@ write_csv(res_df, here("results", "04_deseq_results.csv"))
 ```
 
 ```{r}
-#res_df <- read.csv(here("results", "deseq_results.csv"))
+#res_df <- read.csv(here("results", "04_deseq_results.csv"))
 
 ```
 
@@ -235,8 +235,6 @@ gene_sets <- gene_sets |>
 We can see that the gene_sets contain the ensemble gene without the gene version id while our data contains the version. So before proceeding, we should first change the names in our columns:
 
 ```{r}
-# load DESeq results
-#res_df <- read.csv(here("data", "deseq_results.csv"))
 
 # generate a ranked gene data frame
 ranked_genes<- res_df |> 
@@ -255,7 +253,8 @@ ranked_genes <- ranked_genes |>
 ensembld_ids <- ranked_genes |>
   pull(ensembl_gene)
 
-ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl",mirror="asia")
+ensembl <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl", mirror = "asia")
+
 
 gene_mapping <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"), 
                       filters = "ensembl_gene_id", 
