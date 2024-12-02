@@ -109,7 +109,7 @@ pca_plot <- pca_females |>
     y = "Percentage of Variance Explained"
   )
  
-ggsave(here("results","pca_scree_plot.png"), plot = pca_plot, width = 10, height = 6, dpi = 300,bg = "white")
+ggsave(here("results","05_pca_scree_plot.png"), plot = pca_plot, width = 10, height = 6, dpi = 300,bg = "white")
  
 
 pca_plot
