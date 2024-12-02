@@ -69,7 +69,7 @@ Question: Which genes are differentially expressed in different subtypes of canc
 ![Gene ENSG00000206652](../results/04_boxplot_ENSG00000206652.png)
 
 
-![Enriched pathways](../results/04_top_10_enriched_pathways.png.jpeg)
+![Enriched pathways](../results/04_top_10_enriched_pathways.png)
 
 ![Volcano plot ](../results/04_volcano_plot.png)
 :::
