@@ -136,7 +136,7 @@ cummulative <- pca_females |>
   ) +
   theme_bw(base_size = 14)
 
-ggsave(here("results","cummulative.png"), plot = cummulative, width = 10, height = 6, dpi = 300,bg = "white")
+ggsave(here("results","05_cummulative.png"), plot = cummulative, width = 10, height = 6, dpi = 300,bg = "white")
 
 cummulative
 ```
@@ -177,7 +177,7 @@ heatmap<-ggplot(top_contributing_variables, aes(x = Principal_Component, y = Var
     plot.title = element_text(size = 14, hjust = 0.5)
   )
 
-ggsave(here("results","heatmap.png"), plot = heatmap, width = 10, height = 6, dpi = 300,bg = "white")
+ggsave(here("results","05_heatmap.png"), plot = heatmap, width = 10, height = 6, dpi = 300,bg = "white")
 
 heatmap
 ```
@@ -225,7 +225,7 @@ pc1 <- ggplot(top_genes_loadings_females, aes(x = reorder(term, PC1), y = PC1)) 
   theme_minimal() +             
   theme(axis.text.y = element_text(size = 8)) 
 
-ggsave(here("results","pc1.png"), plot = pc1, width = 10, height = 6, dpi = 300,bg = "white")
+ggsave(here("results","05_pc1.png"), plot = pc1, width = 10, height = 6, dpi = 300,bg = "white")
 
 pc1
 ```
@@ -262,7 +262,7 @@ pc2 <- ggplot(top_genes_loadings_females_2, aes(x = reorder(term, PC2), y = PC2)
   theme_minimal() +             
   theme(axis.text.y = element_text(size = 8))
 
-ggsave(here("results","pc2.png"), plot = pc2, width = 10, height = 6, dpi = 300,bg = "white")
+ggsave(here("results","05_pc2.png"), plot = pc2, width = 10, height = 6, dpi = 300,bg = "white")
 
 pc2
 ```
@@ -302,7 +302,7 @@ scatter <- ggplot(pca_scatter_data, aes(.fittedPC1, .fittedPC2, color = cancer_s
     plot.title = element_text(hjust = 0.5)
   )
 
-ggsave(here("results","scatter.png"), plot = scatter, width = 10, height = 6, dpi = 300,bg = "white")
+ggsave(here("results","05_scatter.png"), plot = scatter, width = 10, height = 6, dpi = 300,bg = "white")
 
 scatter
 ```

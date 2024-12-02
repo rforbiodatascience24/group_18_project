@@ -125,9 +125,8 @@ ggsave(here("results","04_volcano_plot.png"),
 
 ```{r}
 # save DESeq results in results folder
-write_csv(res_df, here("results", "05_deseq_results.csv"))
+write_csv(res_df, here("results", "04_deseq_results.csv"))
 ```
-
 
 ```{r}
 #res_df <- read.csv(here("results", "deseq_results.csv"))
@@ -155,9 +154,7 @@ filtered_female_counts <- counts_checked |>
 
 ```
 
-
 Lets transpose the data to be able to merge it with the metadata file.
-
 
 ```{r}
 
@@ -199,7 +196,6 @@ ggsave(here("results", paste("04_boxplot_ENSG00000206652.png")),
        width = 10, height = 6, dpi = 300,
        bg = "white")
 ```
-
 
 ```{r}
 
@@ -259,7 +255,7 @@ ranked_genes <- ranked_genes |>
 ensembld_ids <- ranked_genes |>
   pull(ensembl_gene)
 
-ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl",mirror="asia")
 
 gene_mapping <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"), 
                       filters = "ensembl_gene_id", 
