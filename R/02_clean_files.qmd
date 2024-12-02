@@ -133,7 +133,7 @@ plt <- ggplot(data = clean_metadata,
 ggsave(
   here("results", "02_male_female_ratio.png"), 
   plot =plt, 
-  width = 10, 
+  width = 5, 
   height = 6, 
   dpi = 300,
   bg = "white")
