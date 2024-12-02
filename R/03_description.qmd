@@ -61,7 +61,7 @@ male_bp <- ggplot(data = male_metadata,
 ggsave(
   here("results", "03_female_age_distribution.png"), 
   plot =female_bp, 
-  width = 10, 
+  width = 5, 
   height = 6, 
   dpi = 300,
   bg = "white")
@@ -70,7 +70,7 @@ ggsave(
 ggsave(
   here("results", "03_male_age_distribution.png"), 
   plot =male_bp, 
-  width = 10, 
+  width = 5, 
   height = 6, 
   dpi = 300,
   bg = "white")
