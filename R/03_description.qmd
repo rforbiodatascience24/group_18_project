@@ -12,6 +12,7 @@ editor: visual
 
 library("here")
 library("tidyverse")
+source("99_proj_func.R")
 ```
 
 Now that we have already imported the necessary libraries, we proceed to load the files and merge them
@@ -39,12 +40,13 @@ Plot age distribution
 
 female_bp <- ggplot(data = female_metadata,
        map = aes(x = cancer_status,
-                 y = age_at_diag)) +
+                 y = age_at_diag,
+                 fill = cancer_status)) +
   geom_boxplot() +
   labs(title = "Age distribution of female patients",
        x = "cancer status",
        y = "age at diagnosis") +
-  theme_light()
+    theme_minimal()
 
 male_bp <- ggplot(data = male_metadata,
        map = aes(x = cancer_status,
@@ -53,7 +55,7 @@ male_bp <- ggplot(data = male_metadata,
   labs(title = "Age distribution of male patients",
        x = "cancer status",
        y = "age at diagnosis") +
-  theme_light()
+    theme_minimal()
 
 
 ggsave(
@@ -72,8 +74,6 @@ ggsave(
   height = 6, 
   dpi = 300,
   bg = "white")
-
-
 ```
 
 ## Country
@@ -87,7 +87,7 @@ bar_country <- ggplot(data = female_metadata,
                  fill = country)) +
   geom_bar() +
   labs(title = "Origin of female patients") +
-  theme_light()
+  theme_minimal()
 
 ggsave(
   here("results", "03_female_country_distribution.png"), 
@@ -96,8 +96,6 @@ ggsave(
   height = 6, 
   dpi = 300,
   bg = "white")
-
-
 ```
 
 ```{r}
@@ -106,8 +104,7 @@ bar_country_male <- ggplot(data = male_metadata,
               fill = country)) +
   geom_bar() +
   labs(title = "Origin of male patients") +
-  theme_light()
-
+  theme_minimal()
 
 ggsave(
   here("results", "03_male_country_distribution.png"), 
@@ -128,7 +125,7 @@ sample_histo <- ggplot(data = female_metadata,
        map = aes(x = histol_type,
                  fill = sample_type)) +
   geom_bar(position = "dodge") + 
-  theme_light() +
+  theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
   labs(title = "Distribution of Histological types",
        x = "histol type",
@@ -142,7 +139,6 @@ ggsave(
   height = 6, 
   dpi = 300,
   bg = "white")
-
 
 ```
 
